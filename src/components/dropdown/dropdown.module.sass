@@ -1,1 +1,39 @@
+.dropdownMenu
+	font-size: 16px
+	line-height: 175%
+	font-weight: 400
+	color: #8A92A6
 
+.dropdown__content
+	padding-left: 15px
+
+.toggleButton
+	display: flex
+	align-items: center
+	justify-content: space-between
+
+.active
+	background-color: #3A57E8
+	color: #fff
+	border-radius: 4px
+
+.option
+	display: flex
+	align-items: center
+	gap: 10px
+	padding: 8px 10px 8px 10px
+	cursor: pointer
+	span
+		max-width: 300px
+		overflow: hidden
+		white-space: nowrap
+		text-overflow: ellipsis
+
+	&:focus
+		background-color: #3A57E8
+		color: #fff
+		border-radius: 4px
+
+.arrowRotate
+	transition: 0.3s
+	transform: rotate(90)

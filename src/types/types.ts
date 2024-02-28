@@ -2,7 +2,7 @@ export interface IGroup {
   id: string;
   name: string;
   departmentId: string;
-  subjectId: string | null;
+  subjectId?: string | null;
 }
 
 export interface IDepartment {
