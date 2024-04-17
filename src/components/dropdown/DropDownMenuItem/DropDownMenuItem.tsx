@@ -29,14 +29,13 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
         <span className={styles.item__text}>{group.name}</span>
 
         <div className={styles.iconButtons__container}>
-          <IconButton>
-            <EditIcon onClick={handleEditGroupClick} fontSize="small" />
+          <IconButton handleClick={handleEditGroupClick}>
+            <EditIcon fontSize="small" />
           </IconButton>
-          <IconButton>
-            <DeleteIcon
-              onClick={() => handleApproveModal(group, departmentName)}
-              fontSize="small"
-            />
+          <IconButton
+            handleClick={() => handleApproveModal(group, departmentName)}
+          >
+            <DeleteIcon fontSize="small" />
           </IconButton>
         </div>
       </li>
