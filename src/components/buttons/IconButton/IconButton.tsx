@@ -3,8 +3,13 @@ import { FC, ReactElement } from 'react';
 
 type IconButtonProps = {
   children: ReactElement;
+  handleClick: () => void;
 };
 
-export const IconButton: FC<IconButtonProps> = ({ children }) => {
-  return <MUIIconButton sx={{ padding: '4px' }}>{children}</MUIIconButton>;
+export const IconButton: FC<IconButtonProps> = ({ children, handleClick }) => {
+  return (
+    <MUIIconButton onClick={handleClick} sx={{ padding: '4px' }}>
+      {children}
+    </MUIIconButton>
+  );
 };

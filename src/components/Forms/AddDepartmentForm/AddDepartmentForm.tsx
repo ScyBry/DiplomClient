@@ -1,13 +1,13 @@
-import { DepartmentSchemaType, departmentSchema } from '../../../utils/zod/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { departmentApi } from '../../../services/department.service';
+import { departmentSchema, DepartmentSchemaType } from '../../../utils/zod/zod';
 import { FormInput } from '../../Inputs/FormInput/FormInput';
 import { Button } from '../../buttons/FormButton/FormButton';
 import styles from './addDepartmentForm.module.sass';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { departmentApi } from '../../../services/department.service';
 
 export const AddDepartmentForm = () => {
-  const [createDepartment, {}] = departmentApi.useCreateDepartmentMutation();
+  const [createDepartment] = departmentApi.useCreateDepartmentMutation();
   const {
     register,
     formState: { errors, isValid },
@@ -26,21 +26,22 @@ export const AddDepartmentForm = () => {
     reset();
   };
   return (
-    <div className={styles.form_wrapper}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div>
+      <form className={styles.form_wrapper} onSubmit={handleSubmit(onSubmit)}>
         <FormInput
           placeholder={'Введите название отделения'}
           label="Название отделения"
           register={register('name', { required: true })}
           error={errors.name}
-        ></FormInput>
+          type="text"
+        />
 
         <Button
           type="submit"
           variant="contained"
           text="Добавить отделение"
           isValid={isValid}
-        ></Button>
+        />
       </form>
     </div>
   );

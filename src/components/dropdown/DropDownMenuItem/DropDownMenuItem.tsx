@@ -2,9 +2,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { IGroup } from '../../../types/types';
-import { IconButton } from '../../buttons/IconButton/IconButton';
-import styles from './DropdownMenuItem.module.sass';
+import { IGroup } from '../../../types/types.ts';
+import { IconButton } from '../../buttons/IconButton/IconButton.tsx';
+import styles from './styles.module.sass';
 
 type DropdownMenuItemProps = {
   group: IGroup;

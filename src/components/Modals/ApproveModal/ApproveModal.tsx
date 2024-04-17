@@ -18,7 +18,7 @@ export const ApproveModal: FC<ApproveModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [deleteGroup, {}] = departmentApi.useDeleteGroupMutation();
+  const [deleteGroup] = departmentApi.useDeleteGroupMutation();
 
   const handleDelete = () => {
     deleteGroup(group?.id);

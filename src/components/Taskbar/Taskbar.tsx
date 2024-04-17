@@ -1,19 +1,20 @@
-import { MoonLoader } from 'react-spinners';
-import { departmentApi as departmentApiService } from '../../services/department.service';
+import { departmentApi } from '../../services/department.service';
 
 import { useState } from 'react';
-import { TaskbarSection } from '../taskbarSection/taskbarSection';
-import styles from './taskbar.module.sass';
+import { DepartmentTaskbarSection } from './DepartmentTaskbarSection/DepartmentTaskbarSection.tsx';
 
+import { CircularProgress, List } from '@mui/material';
 import { IGroup } from '../../types/types';
+import { Backdrop } from '../Backdrop/Backdrop';
 import { AddDepartmentForm } from '../Forms/AddDepartmentForm/AddDepartmentForm';
 import { AddGroupForm } from '../Forms/AddGroupForm/AddGroupForm';
 import { Modal } from '../Modal/Modal';
 import { ApproveModal } from '../Modals/ApproveModal/ApproveModal';
+import { NavigationTaskbarSection } from './NavigationTaskbarSection/NavigationTaskbarSection.tsx';
 
 export const Taskbar = () => {
-  const { data, isLoading, error } =
-    departmentApiService.useGetAllDepartmentsQuery(false);
+  const { data, isLoading } = departmentApi.useGetAllDepartmentsQuery(false);
+
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] =
     useState<boolean>(false);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState<boolean>(false);
@@ -24,9 +25,6 @@ export const Taskbar = () => {
     departmentName: string;
   }>({} as any);
 
-  const handleDepartmentModal = () => {
-    setIsDepartmentModalOpen(!isDepartmentModalOpen);
-  };
   const handleGroupModal = (departmentId: string) => {
     setIsGroupModalOpen(!isGroupModalOpen);
     setSelectedDepartment(departmentId);
@@ -46,22 +44,21 @@ export const Taskbar = () => {
 
   if (isLoading) {
     return (
-      <div className={styles.loaderOverlay}>
-        <MoonLoader />
-      </div>
+      <Backdrop open={true}>
+        <CircularProgress />
+      </Backdrop>
     );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
-    <aside className={styles.taskbar}>
+    <List sx={{ width: '100%', maxWidth: '360px' }}>
+      <NavigationTaskbarSection sectionTitle="Навигация" />
       {data && (
-        <TaskbarSection
+        <DepartmentTaskbarSection
           handleEditGroup={handleEditGroup}
-          handleDepartmentModal={handleDepartmentModal}
+          handleDepartmentModal={() =>
+            setIsDepartmentModalOpen(!isDepartmentModalOpen)
+          }
           handleGroupModal={handleGroupModal}
           handleApproveModal={handleApproveModal}
           sectionTitle="Отделения"
@@ -69,10 +66,13 @@ export const Taskbar = () => {
         />
       )}
 
-      <Modal isOpen={isDepartmentModalOpen} onClose={handleDepartmentModal}>
+      <Modal
+        isOpen={isDepartmentModalOpen}
+        onClose={() => setIsDepartmentModalOpen(!isDepartmentModalOpen)}
+      >
         <AddDepartmentForm />
       </Modal>
-      <Modal isOpen={isGroupModalOpen} onClose={handleGroupModal}>
+      <Modal isOpen={isGroupModalOpen} onClose={() => handleGroupModal}>
         <AddGroupForm departmentId={selectedDepartment} />
       </Modal>
 
@@ -84,6 +84,6 @@ export const Taskbar = () => {
           onClose={handleApproveModal}
         />
       )}
-    </aside>
+    </List>
   );
 };

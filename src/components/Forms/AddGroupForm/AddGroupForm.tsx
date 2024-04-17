@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { GroupSchemaType, groupSchema } from '../../../utils/zod/zod';
-import styles from './addGroupForm.module.sass';
+import { MenuItem, Select } from '@mui/material';
+import { FC } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { departmentApi } from '../../../services/department.service';
+import { groupSchema, GroupSchemaType } from '../../../utils/zod/zod';
 import { FormInput } from '../../Inputs/FormInput/FormInput';
 import { Button } from '../../buttons/FormButton/FormButton';
-import { InputLabel, MenuItem, Select } from '@mui/material';
-import { departmentApi } from '../../../services/department.service';
-import { FC, useEffect, useState } from 'react';
+import styles from './addGroupForm.module.sass';
 
 type AddGroupFormProps = {
   departmentId: string;
@@ -23,20 +23,20 @@ export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
     reset,
   } = useForm({ resolver: zodResolver(groupSchema), mode: 'onChange' });
 
-  const onSubmit = (data: GroupSchemaType) => {
-    console.log(departmentId);
+  const onSubmit: SubmitHandler<GroupSchemaType> = data => {
     createGroup(data);
     reset();
   };
 
   return (
-    <div className={styles.form_wrapper}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div>
+      <form className={styles.form_wrapper} onSubmit={handleSubmit(onSubmit)}>
         <FormInput
           placeholder="Введите название группы"
           label="Название группы"
           register={register('name', { required: true })}
           error={errors.name}
+          type="text"
         />
         <div>
           <Select
