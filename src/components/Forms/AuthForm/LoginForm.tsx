@@ -73,9 +73,9 @@ export const LoginForm = () => {
 
           <div className="flex gap-3 items-center">
             <Typography variant="subtitle1">Еще нет аккаунта?</Typography>
-            <Link className="color" to="/login">
+            <Link className="color" to="/register">
               <Typography variant="subtitle1" color="blue">
-                Зарегестрироваться
+                Зарегистрироваться
               </Typography>
             </Link>
           </div>

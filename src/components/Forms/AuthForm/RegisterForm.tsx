@@ -11,7 +11,7 @@ import { useState } from 'react';
 export const RegisterForm = () => {
   const navigate = useNavigate();
 
-  const [registerUser, { isSuccess, error, isLoading }] =
+  const [registerUser, { isSuccess, error }] =
     userApi.useRegisterUserMutation();
 
   const {

@@ -9,7 +9,7 @@ import { Backdrop } from '../Backdrop/Backdrop';
 import { AddDepartmentForm } from '../Forms/AddDepartmentForm/AddDepartmentForm';
 import { AddGroupForm } from '../Forms/AddGroupForm/AddGroupForm';
 import { Modal } from '../Modal/Modal';
-import { ApproveModal } from '../Modals/ApproveModal/ApproveModal';
+import { ApproveModal } from '../Modals/ApproveModal.tsx';
 import { NavigationTaskbarSection } from './NavigationTaskbarSection/NavigationTaskbarSection.tsx';
 
 export const Taskbar = () => {
@@ -72,7 +72,7 @@ export const Taskbar = () => {
       >
         <AddDepartmentForm />
       </Modal>
-      <Modal isOpen={isGroupModalOpen} onClose={() => handleGroupModal}>
+      <Modal isOpen={isGroupModalOpen} onClose={() => handleGroupModal()}>
         <AddGroupForm departmentId={selectedDepartment} />
       </Modal>
 
@@ -81,7 +81,7 @@ export const Taskbar = () => {
           group={approveModalData?.group}
           departmentName={approveModalData.departmentName}
           isOpen={isApproveModalOpen}
-          onClose={handleApproveModal}
+          handleClose={handleApproveModal}
         />
       )}
     </List>

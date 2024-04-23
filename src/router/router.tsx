@@ -1,10 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { LoginForm } from '../components/Forms/AuthForm/LoginForm.tsx';
 import { RegisterForm } from '../components/Forms/AuthForm/RegisterForm.tsx';
-import { GroupPage } from '../pages/GroupPage/GroupPage';
+import { GroupPage } from '../pages/GroupPage.tsx';
 import { MainLayout } from '../pages/MainLayout';
 import { TeachersPage } from '../pages/TeachersPage.tsx';
 import { ProtectedRoute } from './ProtectedRoute.tsx';
+import { SchedulePage } from '../pages/SchedulePage.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
     errorElement: <div>Что-то пошло не так....</div>,
 
     children: [
+      {
+        path: '/schedule',
+        element: <SchedulePage />,
+      },
       {
         path: '/groups/:id',
         element: <GroupPage />,

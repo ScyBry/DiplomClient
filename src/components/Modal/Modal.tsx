@@ -1,4 +1,4 @@
-import { Modal as MUIModal } from '@mui/material';
+import { Modal as MUIModal, Paper } from '@mui/material';
 import { FC, ReactElement } from 'react';
 
 type ModalProps = {
@@ -18,7 +18,11 @@ export const Modal: FC<ModalProps> = ({ children, isOpen, onClose }) => {
       open={isOpen}
       onClose={onClose}
     >
-      {children}
+      <Paper
+        sx={{ padding: '16px 32px 24px', maxWidth: '500px', minWidth: '400px' }}
+      >
+        {children}
+      </Paper>
     </MUIModal>
   );
 };

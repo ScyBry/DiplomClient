@@ -17,7 +17,8 @@ export interface ITeacher {
   lastName: string;
   surname: string;
   totalHours: number;
-  subjectId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ISubject {

@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_ROUTES } from '../constants';
-import { IDepartment, IGroup, ISubject, ITeacher } from '../types/types';
+import { IDepartment, IGroup, ITeacher } from '../types/types';
 
 export const departmentApi = createApi({
   reducerPath: 'departmentApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:7777/api',
   }),
-  tagTypes: ['Department', 'Group', 'Teachers', 'Subjects'],
+  tagTypes: ['Department', 'Group', 'Teachers'],
   endpoints: build => ({
     getAllDepartments: build.query<IDepartment[], boolean>({
       query: (withGroups: boolean) => ({
@@ -26,7 +26,7 @@ export const departmentApi = createApi({
       }),
       invalidatesTags: ['Department'],
     }),
-    createGroup: build.mutation<IGroup, IGroup>({
+    createGroup: build.mutation({
       query: group => ({
         url: API_ROUTES.createGroup,
         method: 'POST',
@@ -65,39 +65,6 @@ export const departmentApi = createApi({
         url: API_ROUTES.getAllTeachers,
       }),
       providesTags: ['Teachers'],
-    }),
-
-    getAllGroupSubjects: build.query<ISubject[], string>({
-      query: (id: string) => ({
-        url: API_ROUTES.getAllGroupSubjects,
-        params: {
-          id,
-        },
-      }),
-      providesTags: ['Subjects'],
-    }),
-
-    updateSubject: build.mutation({
-      query: ({ id, data }) => ({
-        url: API_ROUTES.updateSubject,
-        params: {
-          id,
-        },
-        body: data,
-        method: 'PATCH',
-      }),
-      invalidatesTags: ['Subjects'],
-    }),
-
-    deleteSubject: build.mutation({
-      query: ({ id }) => ({
-        url: API_ROUTES.deleteSubject,
-        params: {
-          id,
-        },
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Subjects'],
     }),
   }),
 });

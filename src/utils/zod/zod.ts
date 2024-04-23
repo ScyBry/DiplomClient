@@ -1,4 +1,5 @@
-import z from 'zod';
+import { group } from 'console';
+import z, { number } from 'zod';
 
 export const departmentSchema = z.object({
   name: z.string().min(1, { message: 'Введите название отделения' }),
@@ -6,16 +7,13 @@ export const departmentSchema = z.object({
 export type DepartmentSchemaType = z.infer<typeof departmentSchema>;
 
 export const groupSchema = z.object({
-  name: z.string().min(1, { message: 'Введите название группы' }),
   departmentId: z.string().min(1, { message: 'Выберите отделение' }),
+  name: z
+    .string()
+    .min(1, { message: 'Введите название группы' })
+    .max(100, { message: 'Название группы не должно превышать 100 символов' }),
 });
 export type GroupSchemaType = z.infer<typeof groupSchema>;
-
-export const subjectSchema = z.object({
-  name: z.string().min(1, { message: 'Введите название предмета' }),
-  hoursPerGroup: z.string().min(1, { message: 'Укажите количество часов' }),
-});
-export type SubjectSchemaType = z.infer<typeof subjectSchema>;
 
 export const registerSchema = z
   .object({
@@ -59,3 +57,32 @@ export const loginSchema = z.object({
     .max(100, { message: 'Пароль не должен превышать 100 символов' }),
 });
 export type LoginSchemaType = z.infer<typeof loginSchema>;
+
+export const addTeacherSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, { message: 'Имя не может быть пустым' })
+    .max(100, { message: 'Имя не должно превышать 100 символов' }),
+  lastName: z
+    .string()
+    .min(1, { message: 'Фамилия не может быть пустым' })
+    .max(100, { message: 'Фамилия не должна превышать 100 символов' }),
+  surname: z
+    .string()
+    .min(1, { message: 'Отчество не может быть пустым' })
+    .max(100, { message: 'Отчество не должна превышать 100 символов' }),
+  totalHours: z.string(),
+});
+export type AddTeacherSchemaType = z.infer<typeof addTeacherSchema>;
+
+export const subjectSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: 'Название предмета не должно быть пустым' })
+    .max(100, {
+      message: 'Название предмета не должно превышать 100 символов',
+    }),
+  hoursPerGroup: number().min(1, { message: 'Поле не может быть пустым' }),
+  groupId: z.string(),
+});
+export type SubjectSchemaType = z.infer<typeof subjectSchema>;
