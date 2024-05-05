@@ -8,6 +8,7 @@ export const API_ROUTES = {
   getAllTeachers: 'teacher/getAllTeachers',
   createTeacher: 'teacher/createTeacher',
   deleteTeacher: 'teacher/deleteTeacher',
+  assignSubjectsToTeacher: 'teacher/assignSubjectsToTeacher',
 
   getAllGroupSubjects: 'subject/getAllGroupSubjects',
   createSubject: 'subject/createSubject',

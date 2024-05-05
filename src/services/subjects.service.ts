@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase';
 import { API_ROUTES } from '../constants';
+import { ISubject } from '../types/types';
 
 export const subjectApi = createApi({
   reducerPath: 'subjectApi',
@@ -10,7 +11,7 @@ export const subjectApi = createApi({
   }),
   tagTypes: ['GroupSubjects'],
   endpoints: build => ({
-    getAllGroupSubjects: build.query({
+    getAllGroupSubjects: build.query<ISubject[], string>({
       query: (id: string) => ({
         url: API_ROUTES.getAllGroupSubjects,
         params: {
@@ -25,6 +26,7 @@ export const subjectApi = createApi({
         method: 'POST',
         body: subject,
       }),
+      invalidatesTags: ['GroupSubjects'],
     }),
   }),
 });

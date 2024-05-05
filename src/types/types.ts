@@ -16,17 +16,10 @@ export interface ITeacher {
   firstName: string;
   lastName: string;
   surname: string;
+  fullName: string;
   totalHours: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface ISubject {
-  id: string;
-  name: string;
-  hoursPerGroup: number;
-  groupId: string;
-  Teachers: ITeacher[];
 }
 
 export interface IRegisterUser {
@@ -45,4 +38,14 @@ export interface IGetProfile {
   id: string;
   email: string;
   username: string;
+}
+
+export interface ISubject {
+  id: string;
+  name: string;
+  hoursPerGroup: number;
+  createdAt: Date;
+  updatedAt: Date;
+  groupId: string;
+  teachers: ITeacher[];
 }

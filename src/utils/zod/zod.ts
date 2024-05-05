@@ -1,5 +1,4 @@
-import { group } from 'console';
-import z, { number } from 'zod';
+import z from 'zod';
 
 export const departmentSchema = z.object({
   name: z.string().min(1, { message: 'Введите название отделения' }),
@@ -82,7 +81,6 @@ export const subjectSchema = z.object({
     .max(100, {
       message: 'Название предмета не должно превышать 100 символов',
     }),
-  hoursPerGroup: number().min(1, { message: 'Поле не может быть пустым' }),
-  groupId: z.string(),
+  hoursPerGroup: z.string().min(1, { message: 'Поле не может быть пустым' }),
 });
 export type SubjectSchemaType = z.infer<typeof subjectSchema>;
