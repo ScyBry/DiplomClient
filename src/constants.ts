@@ -18,6 +18,9 @@ export const API_ROUTES = {
   registerUser: 'auth/signup',
   loginUser: 'auth/signin',
   getProfile: 'auth/getProfile',
+
+  getGroupSchedule: 'schedule/getGroupSchedule',
+  saveDaySchedule: 'schedule/saveDaySchedule',
 };
 
 export const SUBJECT_TABLE_HEAD_ROWS = ['Дисциплина', 'Кол-во часов'];
@@ -39,7 +42,7 @@ export const TASKBAR_NAVIGATION = [
   },
 ];
 
-export const TABS_HEADER = [
+export const WEAK_DAYS = [
   {
     label: 'ПН',
     id: 'simple-tab-0',

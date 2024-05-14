@@ -2,18 +2,22 @@ import { FC, useState } from 'react';
 import { IDepartment, IGroup } from '../../types/types';
 import {
   Collapse,
+  Divider,
+  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Tooltip,
 } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Link } from 'react-router-dom';
-import { IconButton } from '../buttons/IconButton/IconButton.tsx';
+
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 
 interface DropdownMenuProps {
   option: IDepartment;
@@ -39,20 +43,33 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       <Collapse in={open} timeout="auto">
         <List component="div" disablePadding>
           {option.groups.map(group => (
-            <ListItemButton className="flex gap-3">
+            <ListItemButton className="group flex gap-3">
               <ListItemIcon>
-                <IconButton handleClick={() => handleEditGroup(group.id)}>
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  handleClick={() => handleApproveModal(group, option.name)}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <Link to={`/groups/${group.id}`}>
+                  <ListItemText primary={group.name} />
+                </Link>
               </ListItemIcon>
-              <Link to={`/groups/${group.id}`}>
-                <ListItemText primary={group.name} />
-              </Link>
+              <div className="invisible group-hover:visible">
+                <Link to={`groupSchedule/${group.id}`}>
+                  <Tooltip title="Расписание">
+                    <IconButton>
+                      <EditCalendarIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Link>
+                <Tooltip title="Изменить">
+                  <IconButton onClick={() => handleEditGroup(group.id)}>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Удалить группу">
+                  <IconButton
+                    onClick={() => handleApproveModal(group, option.name)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </div>
             </ListItemButton>
           ))}
         </List>
@@ -64,6 +81,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
 
           <ListItemText primary="Добавить группу" />
         </ListItemButton>
+        <Divider />
       </Collapse>
     </>
   );

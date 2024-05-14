@@ -5,44 +5,38 @@ import { Alert, Button, TextField, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import CheckIcon from '@mui/icons-material/Check';
 import { userApi } from '../../../services/user.service.ts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { setTokenToLocalStorage } from '../../../utils/axios/axiosBase.ts';
+import { LoadingButton } from '@mui/lab';
 
 export const LoginForm = () => {
   const navigate = useNavigate();
 
-  const [loginUser, { error, isSuccess, isLoading }] =
+  const [loginUser, { error, data, isSuccess, isLoading, isError }] =
     userApi.useLoginUserMutation();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     mode: 'onChange',
   });
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
   const onSubmit: SubmitHandler<LoginSchemaType> = async userFields => {
-    loginUser(userFields)
-      .then(response => {
-        if (response?.data?.statusCode === 200) {
-          console.log(response);
-          setTokenToLocalStorage(response?.data?.token);
-          navigate('/');
-        } else {
-          setErrorMessage(
-            response?.error?.data?.message || 'Ошибка регистрации',
-          );
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка при регистрации:', error);
-        setErrorMessage('Произошла ошибка при регистрации');
-      });
+    await loginUser(userFields);
+    reset();
   };
+
+  useEffect(() => {
+    if (data) {
+      const result = setTokenToLocalStorage(data.token);
+
+      if (result) navigate('/');
+    }
+  }, [isSuccess, data]);
 
   return (
     <div className="flex w-full h-[100vh] justify-center items-center">
@@ -79,14 +73,16 @@ export const LoginForm = () => {
               </Typography>
             </Link>
           </div>
-          <Button
+          <LoadingButton
+            loading={isLoading}
+            loadingPosition="start"
             className="max-w-28"
             type="submit"
             variant="contained"
-            disabled={!isValid || isLoading}
+            disabled={!isValid}
           >
             Войти
-          </Button>
+          </LoadingButton>
         </div>
 
         {isSuccess && (
@@ -95,13 +91,14 @@ export const LoginForm = () => {
             icon={<CheckIcon fontSize="inherit" />}
             severity="success"
           >
-            Аккаунт успешно создан
+            Авторизован
           </Alert>
         )}
 
-        {error && (
+        {isError && (
           <Alert className="absolute bottom-2 left-2" severity="error">
-            {errorMessage}
+            {/* Handle specific errors here */}
+            {error.data?.message}
           </Alert>
         )}
       </form>

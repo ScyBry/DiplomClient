@@ -1,12 +1,12 @@
 import { Backdrop, Box, CircularProgress, Tab, Tabs } from '@mui/material';
-import { TABS_HEADER } from '../../constants';
+import { WEAK_DAYS } from '../../constants';
 import { SyntheticEvent, useState } from 'react';
 import { TabPanel } from './TabPanel/TabPanel';
 import { departmentApi } from '../../services/department.service';
-import { DaySchedule } from './DaySchedule/DaySchedule';
+import { DepartmentWrapper } from './DepartmentWrapper/DepartmentWrapper';
 
 export const ScheduleTabs = () => {
-  const { data, isLoading, isError, isSuccess } =
+  const { data, isLoading, isSuccess } =
     departmentApi.useGetAllDepartmentsQuery(true);
 
   const [value, setValue] = useState<number>(0);
@@ -24,49 +24,36 @@ export const ScheduleTabs = () => {
   }
 
   if (isSuccess) {
-    console.log(data);
+    data;
   }
 
-  const scheduleData = [
-    {
-      lessonNumber: 1,
-      time: '8:00 - 9:00',
-      group: 'Group A',
-      classroom: '101',
-    },
-    {
-      lessonNumber: 2,
-      time: '9:00 - 10:00',
-      group: 'Group B',
-      classroom: '102',
-    },
-    // Другие объекты расписания...
-  ];
-
   return (
-    <Box sx={{ width: `100%` }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleValueChange}>
-          {TABS_HEADER.map(tab => (
-            <Tab label={tab.label} id={tab.id} />
+    <Box sx={{ width: `100%`, overflow: 'auto' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', overflow: 'auto' }}>
+        <Tabs
+          sx={{ overflow: 'auto' }}
+          value={value}
+          onChange={handleValueChange}
+        >
+          {WEAK_DAYS.map(tab => (
+            <Tab key={tab.id} label={tab.label} id={tab.id} />
           ))}
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
-        <DaySchedule scheduleData={scheduleData} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <DaySchedule />
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        Item Three
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        Item Three
-      </TabPanel>
+      <div className="overflow-auto">
+        {WEAK_DAYS.map((_, index) => (
+          <TabPanel value={value} index={index} key={index}>
+            {data?.map(department => (
+              <div className="overflow-auto flex">
+                <DepartmentWrapper
+                  department={department}
+                  key={department.id}
+                />
+              </div>
+            ))}
+          </TabPanel>
+        ))}
+      </div>
     </Box>
   );
 };

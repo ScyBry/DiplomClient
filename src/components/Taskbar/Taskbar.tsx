@@ -6,14 +6,16 @@ import { DepartmentTaskbarSection } from './DepartmentTaskbarSection/DepartmentT
 import { CircularProgress, List } from '@mui/material';
 import { IGroup } from '../../types/types';
 import { Backdrop } from '../Backdrop/Backdrop';
-import { AddDepartmentForm } from '../Forms/AddDepartmentForm/AddDepartmentForm';
+import { AddDepartmentForm } from '../Forms/AddDepartmentForm.tsx';
 import { AddGroupForm } from '../Forms/AddGroupForm/AddGroupForm';
 import { Modal } from '../Modal/Modal';
 import { ApproveModal } from '../Modals/ApproveModal.tsx';
 import { NavigationTaskbarSection } from './NavigationTaskbarSection/NavigationTaskbarSection.tsx';
 
 export const Taskbar = () => {
-  const { data, isLoading } = departmentApi.useGetAllDepartmentsQuery(false);
+  const { data: departments, isLoading } =
+    departmentApi.useGetAllDepartmentsQuery(false);
+  const [deleteGroup] = departmentApi.useDeleteGroupMutation();
 
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] =
     useState<boolean>(false);
@@ -23,7 +25,7 @@ export const Taskbar = () => {
   const [approveModalData, setApproveModalData] = useState<{
     group: IGroup;
     departmentName: string;
-  }>({} as any);
+  } | null>(null);
 
   const handleGroupModal = (departmentId: string) => {
     setIsGroupModalOpen(!isGroupModalOpen);
@@ -31,7 +33,7 @@ export const Taskbar = () => {
   };
 
   const handleEditGroup = (groupId: string) => {
-    console.log(`Editing group with id ${groupId}`);
+    `Editing group with id ${groupId}`;
   };
 
   const handleApproveModal = (group: IGroup, departmentName: string) => {
@@ -39,7 +41,12 @@ export const Taskbar = () => {
       group,
       departmentName,
     });
-    setIsApproveModalOpen(!isApproveModalOpen);
+    setIsApproveModalOpen(true);
+  };
+
+  const handleDeleteGroup = () => {
+    deleteGroup(approveModalData?.group.id);
+    setIsApproveModalOpen(false);
   };
 
   if (isLoading) {
@@ -53,7 +60,7 @@ export const Taskbar = () => {
   return (
     <List sx={{ width: '100%', maxWidth: '360px' }}>
       <NavigationTaskbarSection sectionTitle="Навигация" />
-      {data && (
+      {departments && (
         <DepartmentTaskbarSection
           handleEditGroup={handleEditGroup}
           handleDepartmentModal={() =>
@@ -62,7 +69,7 @@ export const Taskbar = () => {
           handleGroupModal={handleGroupModal}
           handleApproveModal={handleApproveModal}
           sectionTitle="Отделения"
-          sectionData={data}
+          sectionData={departments}
         />
       )}
 
@@ -72,16 +79,20 @@ export const Taskbar = () => {
       >
         <AddDepartmentForm />
       </Modal>
-      <Modal isOpen={isGroupModalOpen} onClose={() => handleGroupModal()}>
+
+      <Modal
+        isOpen={isGroupModalOpen}
+        onClose={() => handleGroupModal(selectedDepartment)}
+      >
         <AddGroupForm departmentId={selectedDepartment} />
       </Modal>
 
       {approveModalData && (
         <ApproveModal
-          group={approveModalData?.group}
-          departmentName={approveModalData.departmentName}
+          text={`Вы действительно хотите удалить группу ${approveModalData.group.name} из ${approveModalData.departmentName}`}
           isOpen={isApproveModalOpen}
-          handleClose={handleApproveModal}
+          handleClose={() => setIsApproveModalOpen(false)}
+          func={handleDeleteGroup}
         />
       )}
     </List>

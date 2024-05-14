@@ -4,6 +4,8 @@ import { FC } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { departmentApi } from '../../../services/department.service';
 import { groupSchema, GroupSchemaType } from '../../../utils/zod/zod';
+import { Alert } from '../../Alert';
+import { LoadingButton } from '@mui/lab';
 
 type AddGroupFormProps = {
   departmentId: string;
@@ -11,7 +13,8 @@ type AddGroupFormProps = {
 
 export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
   const { data } = departmentApi.useGetAllDepartmentsQuery(false);
-  const [createGroup] = departmentApi.useCreateGroupMutation();
+  const [createGroup, { isSuccess, isError, error, isLoading }] =
+    departmentApi.useCreateGroupMutation();
 
   const {
     register,
@@ -53,9 +56,18 @@ export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
             ))}
         </Select>
       </div>
-      <Button variant="contained" disabled={!isValid} type="submit">
+      <LoadingButton
+        loading={isLoading}
+        loadingPosition="start"
+        variant="contained"
+        disabled={!isValid}
+        type="submit"
+      >
         Добавить группу
-      </Button>
+      </LoadingButton>
+
+      {isSuccess && <Alert severity="success">Группа успешно добавлена</Alert>}
+      {isError && <Alert severity="error">{error?.data?.message}</Alert>}
     </form>
   );
 };

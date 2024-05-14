@@ -3,9 +3,10 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { addTeacherSchema, AddTeacherSchemaType } from '../../utils/zod/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { teacherApi } from '../../services/teacher.service';
+import { LoadingButton } from '@mui/lab';
 
 export const AddTeacherForm = () => {
-  const [createTeacher] = teacherApi.useCreateTeacherMutation();
+  const [createTeacher, { isLoading }] = teacherApi.useCreateTeacherMutation();
 
   const {
     register,
@@ -59,9 +60,16 @@ export const AddTeacherForm = () => {
         error={!!errors.totalHours}
         helperText={errors.totalHours?.message}
       />
-      <Button fullWidth type="submit" variant="contained" disabled={!isValid}>
+      <LoadingButton
+        loading={isLoading}
+        loadingPosition="start"
+        fullWidth
+        type="submit"
+        variant="contained"
+        disabled={!isValid}
+      >
         Добавить преподавателя
-      </Button>
+      </LoadingButton>
     </form>
   );
 };

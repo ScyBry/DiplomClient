@@ -28,5 +28,15 @@ export const subjectApi = createApi({
       }),
       invalidatesTags: ['GroupSubjects'],
     }),
+    deleteSubject: build.mutation({
+      query: id => ({
+        url: API_ROUTES.deleteSubject,
+        method: 'DELETE',
+        params: {
+          id,
+        },
+      }),
+      invalidatesTags: ['GroupSubjects'],
+    }),
   }),
 });

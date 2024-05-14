@@ -1,5 +1,10 @@
 import { FC } from 'react';
-import { ListItemButton, ListItemText, ListSubheader } from '@mui/material';
+import {
+  Divider,
+  ListItemButton,
+  ListItemText,
+  ListSubheader,
+} from '@mui/material';
 import { TASKBAR_NAVIGATION } from '../../../constants.ts';
 import { Link } from 'react-router-dom';
 
@@ -24,6 +29,7 @@ export const NavigationTaskbarSection: FC<NavigationTaskbarSectionProps> = ({
           </Link>
         ))}
       </div>
+      <Divider />
     </>
   );
 };

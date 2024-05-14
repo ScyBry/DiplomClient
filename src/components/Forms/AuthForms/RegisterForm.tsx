@@ -6,12 +6,13 @@ import { userApi } from '../../../services/user.service.ts';
 import CheckIcon from '@mui/icons-material/Check';
 import { Link, useNavigate } from 'react-router-dom';
 import { setTokenToLocalStorage } from '../../../utils/axios/axiosBase.ts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { LoadingButton } from '@mui/lab';
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
 
-  const [registerUser, { isSuccess, error }] =
+  const [registerUser, { isSuccess, error, data, isError, isLoading }] =
     userApi.useRegisterUserMutation();
 
   const {
@@ -23,25 +24,16 @@ export const RegisterForm = () => {
     mode: 'onChange',
   });
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
   const onSubmit: SubmitHandler<RegisterSchemaType> = async userFields => {
-    registerUser(userFields)
-      .then(response => {
-        if (response?.data?.statusCode === 201) {
-          setTokenToLocalStorage(response?.data?.token);
-          navigate('/');
-        } else {
-          setErrorMessage(
-            response?.error?.data?.message || 'Ошибка регистрации',
-          );
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка при регистрации:', error);
-        setErrorMessage('Произошла ошибка при регистрации');
-      });
+    await registerUser(userFields);
   };
+
+  useEffect(() => {
+    if (data) {
+      const result = setTokenToLocalStorage(data.token);
+      if (result) navigate('/');
+    }
+  }, [isSuccess, data]);
 
   return (
     <div className="flex w-full h-[100vh] justify-center items-center">
@@ -92,9 +84,15 @@ export const RegisterForm = () => {
               </Typography>
             </Link>
           </div>
-          <Button type="submit" variant="contained" disabled={!isValid}>
-            Зарегестрироваться
-          </Button>
+          <LoadingButton
+            loading={isLoading}
+            loadingPosition="start"
+            type="submit"
+            variant="contained"
+            disabled={!isValid}
+          >
+            Зарегистрироваться
+          </LoadingButton>
         </div>
 
         {isSuccess && (
@@ -107,9 +105,9 @@ export const RegisterForm = () => {
           </Alert>
         )}
 
-        {error && (
+        {isError && (
           <Alert className="absolute bottom-2 left-2" severity="error">
-            {errorMessage}
+            {error.data.message}
           </Alert>
         )}
       </form>

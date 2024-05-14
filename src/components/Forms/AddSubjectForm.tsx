@@ -5,13 +5,14 @@ import { Button, TextField, Typography } from '@mui/material';
 import { subjectApi } from '../../services/subjects.service';
 import { Alert } from '../Alert';
 import { FC } from 'react';
+import { LoadingButton } from '@mui/lab';
 
 type AddSubjectFormProps = {
   groupId: string;
 };
 
 export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
-  const [createSubject, { isSuccess, isError, error }] =
+  const [createSubject, { isSuccess, isError, error, isLoading }] =
     subjectApi.useAddSubjectMutation();
 
   const {
@@ -56,10 +57,20 @@ export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
           helperText={errors.hoursPerGroup?.message}
         />
 
-        <Button fullWidth type="submit" variant="contained" disabled={!isValid}>
+        <LoadingButton
+          loading={isLoading}
+          loadingPosition="start"
+          fullWidth
+          type="submit"
+          variant="contained"
+          disabled={!isValid}
+        >
           Добавить предмет
-        </Button>
+        </LoadingButton>
       </form>
+
+      {isSuccess && <Alert severity="success">Предмет успешно добавлен</Alert>}
+
       {isError && <Alert severity="error">{error.data.message}</Alert>}
     </>
   );

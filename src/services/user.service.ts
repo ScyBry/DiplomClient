@@ -7,7 +7,6 @@ export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:7777/api',
-    headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
   }),
   tagTypes: ['User', 'IsAuth'],
   endpoints: build => ({
@@ -33,6 +32,9 @@ export const userApi = createApi({
       query: () => ({
         url: API_ROUTES.getProfile,
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+        },
       }),
       providesTags: result => ['IsAuth'],
     }),

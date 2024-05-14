@@ -94,7 +94,7 @@ export const TeachersTable: FC<TeachersTableProps> = ({
                 <TableCell align="left">
                   <TextField type="number" defaultValue={teacher.totalHours} />
                 </TableCell>
-                <TableCell align="right" className="">
+                <TableCell align="right">
                   <IconButton>
                     <EditIcon />
                   </IconButton>

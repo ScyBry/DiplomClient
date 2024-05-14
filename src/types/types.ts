@@ -2,7 +2,7 @@ export interface IGroup {
   id: string;
   name: string;
   departmentId: string;
-  subjectId?: string | null;
+  subjects: ISubject[];
 }
 
 export interface IDepartment {
@@ -27,11 +27,13 @@ export interface IRegisterUser {
   username: string;
   password: string;
   repeatPassword: string;
+  token: string;
 }
 
 export interface ILoginUser {
   emailOrUsername: string;
   password: string;
+  token: string;
 }
 
 export interface IGetProfile {
@@ -48,4 +50,31 @@ export interface ISubject {
   updatedAt: Date;
   groupId: string;
   teachers: ITeacher[];
+}
+
+export interface IScheduleSubject {
+  orderNumber: number;
+  subjectId: string;
+  roomNumber: string;
+}
+
+export interface IScheduleDay {
+  groupId: string;
+  dayScheduleId: string;
+  daySubjects: IScheduleSubject[];
+}
+
+export interface IScheduleData {
+  id: string;
+  dayOfWeek: string;
+  groupId: string;
+  scheduleSubjects: ScheduleSubject[];
+}
+
+export interface ScheduleSubject {
+  id: string;
+  roomNumber: string;
+  orderNumber: number;
+  subjectId: string;
+  dayScheduleId: string;
 }

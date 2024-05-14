@@ -1,19 +1,19 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { Drawer } from '@mui/material';
+import { Drawer, IconButton, Tooltip } from '@mui/material';
 import { FC, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Taskbar } from '../components/Taskbar/Taskbar.tsx';
-import { IconButton } from '../components/buttons/IconButton/IconButton';
 
 export const MainLayout: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-    <div>
-      <IconButton
-        children={<MenuIcon fontSize="large" />}
-        handleClick={() => setIsOpen(true)}
-      />
+    <div className="">
+      <Tooltip title="Открыть меню">
+        <IconButton onClick={() => setIsOpen(true)}>
+          <MenuIcon />
+        </IconButton>
+      </Tooltip>
 
       <Drawer open={isOpen} onClose={() => setIsOpen(false)}>
         <Taskbar />

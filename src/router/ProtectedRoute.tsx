@@ -1,6 +1,7 @@
 import { FC, ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from '../services/user.service.ts';
+import { LoadingCircle } from '../components/Loading.tsx';
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -8,15 +9,11 @@ type ProtectedRouteProps = {
 
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate();
-  const { data, isLoading } = userApi.useGetProfileQuery();
+  const { data, isLoading, isError } = userApi.useGetProfileQuery();
 
-  useEffect(() => {
-    if (!isLoading && !data) {
-      console.log(data);
+  if (isLoading) return <LoadingCircle />;
 
-      navigate('/register');
-    }
-  }, [isLoading, data, navigate]);
+  if (!data || isError) navigate('/register');
 
   return <>{children}</>;
 };

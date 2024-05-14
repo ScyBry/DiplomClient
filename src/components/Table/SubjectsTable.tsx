@@ -1,14 +1,3 @@
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { subjectApi } from '../../services/subjects.service';
@@ -16,6 +5,12 @@ import { FC, useState } from 'react';
 import { ISubject } from '../../types/types';
 import AddIcon from '@mui/icons-material/Add';
 import {
+  Box,
+  Collapse,
+  IconButton,
+  TableCell,
+  TableRow,
+  Typography,
   Button,
   FormControl,
   FormHelperText,
@@ -24,16 +19,25 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  Table,
+  TableBody,
+  TableHead,
+  TableContainer,
+  Paper,
 } from '@mui/material';
 import { teacherApi } from '../../services/teacher.service';
 import { Modal } from '../Modal/Modal';
 import { AddSubjectForm } from '../Forms/AddSubjectForm';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ApproveModal } from '../Modals/ApproveModal';
 
 type RowProps = {
   row: ISubject;
+  handleDeleteClick: (subjectId: string) => void;
 };
 
-const Row: FC<RowProps> = ({ row }) => {
+const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
   const [assignSubjectsToTeacher] =
     teacherApi.useAssignSubjectsToTeacherMutation();
 
@@ -50,7 +54,10 @@ const Row: FC<RowProps> = ({ row }) => {
 
   return (
     <>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow
+        className="hover:bg-gray-100"
+        sx={{ '& > *': { borderBottom: 'unset' } }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -64,7 +71,19 @@ const Row: FC<RowProps> = ({ row }) => {
           <TextField size="small" defaultValue={row.name} />
         </TableCell>
         <TableCell align="left">
-          <TextField size="small" defaultValue={row.hoursPerGroup} />
+          <TextField
+            size="small"
+            type="number"
+            defaultValue={row.hoursPerGroup}
+          />
+        </TableCell>
+        <TableCell align="right" className="">
+          <IconButton>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteClick(row.id)}>
+            <DeleteIcon />
+          </IconButton>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -80,10 +99,7 @@ const Row: FC<RowProps> = ({ row }) => {
                 </TableHead>
                 <TableBody>
                   <TableRow>
-                    <FormControl
-                      sx={{ m: 1, minWidth: 120 }}
-                      disabled={isLoading || !isEditable}
-                    >
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
                       <InputLabel id="teachers-select-label">
                         Преподаватель
                       </InputLabel>
@@ -93,6 +109,9 @@ const Row: FC<RowProps> = ({ row }) => {
                         label="Преподаватель"
                         onChange={handleChange}
                         defaultValue={row.teachers[0]?.id}
+                        inputProps={{
+                          readOnly: isLoading || !isEditable ? true : false,
+                        }}
                       >
                         {teachers?.map(teacher => (
                           <MenuItem key={teacher.id} value={teacher.id}>
@@ -148,7 +167,21 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id }) => {
   const { data: subjects, isSuccess } =
     subjectApi.useGetAllGroupSubjectsQuery(id);
 
+  const [deleteSubject] = subjectApi.useDeleteSubjectMutation();
+
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
+
+  const handleDeleteClick = (subjectId: string) => {
+    setSelectedSubject(subjectId);
+    setIsApproveModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    deleteSubject(selectedSubject);
+    setIsApproveModalOpen(false);
+  };
 
   return (
     <>
@@ -161,21 +194,31 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id }) => {
           overflow: 'auto',
         }}
       >
-        <Table aria-label="collapsible table">
+        <Table stickyHeader aria-label="collapsible table">
           <TableHead>
+            <Typography className="p-3" variant="h5">
+              Предметы
+            </Typography>
             <TableRow>
-              <TableCell>
+              <TableCell />
+              <TableCell align="left">Предмет</TableCell>
+              <TableCell align="left">Кол-во часов</TableCell>
+              <TableCell align="right">
                 <IconButton onClick={() => setIsAddModalOpen(true)}>
                   <AddIcon />
                 </IconButton>
               </TableCell>
-              <TableCell align="left">Предмет</TableCell>
-              <TableCell align="left">Кол-во часов</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {isSuccess &&
-              subjects.map(subject => <Row key={subject.name} row={subject} />)}
+              subjects.map(subject => (
+                <Row
+                  handleDeleteClick={handleDeleteClick}
+                  key={subject.name}
+                  row={subject}
+                />
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -183,6 +226,15 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id }) => {
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <AddSubjectForm groupId={id} />
       </Modal>
+
+      {selectedSubject && (
+        <ApproveModal
+          text={`Вы действительно хотите удалить предмет?`}
+          handleClose={() => setIsApproveModalOpen(false)}
+          isOpen={isApproveModalOpen}
+          func={handleDelete}
+        />
+      )}
     </>
   );
 };
