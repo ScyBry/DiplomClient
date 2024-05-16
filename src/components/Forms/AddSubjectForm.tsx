@@ -42,6 +42,7 @@ export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
         <Typography variant="h6">Добавить предмет</Typography>
         <TextField
           fullWidth
+          multiline
           label="Название предмета"
           placeholder="Введите название предмета"
           {...register('name')}

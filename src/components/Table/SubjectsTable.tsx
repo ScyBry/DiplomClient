@@ -7,23 +7,22 @@ import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Collapse,
-  IconButton,
-  TableCell,
-  TableRow,
-  Typography,
-  Button,
   FormControl,
   FormHelperText,
+  IconButton,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
-  TextField,
   Table,
   TableBody,
-  TableHead,
+  TableCell,
   TableContainer,
-  Paper,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { teacherApi } from '../../services/teacher.service';
 import { Modal } from '../Modal/Modal';
@@ -31,6 +30,7 @@ import { AddSubjectForm } from '../Forms/AddSubjectForm';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ApproveModal } from '../Modals/ApproveModal';
+import { LoadingButton } from '@mui/lab';
 
 type RowProps = {
   row: ISubject;
@@ -38,19 +38,40 @@ type RowProps = {
 };
 
 const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
-  const [assignSubjectsToTeacher] =
+  const [assignSubjectsToTeacher, { isLoading, isError, isSuccess }] =
     teacherApi.useAssignSubjectsToTeacherMutation();
 
   const [open, setOpen] = useState<boolean>(false);
   const [teacher, setTeacher] = useState<string>(row.teachers[0]?.id);
   const [isEditable, setIsEditable] = useState<boolean>(false);
 
+  const [subjectNameField, setSubjectNameField] = useState<string>('');
+  const [subjectHoursField, setSubjectHoursField] = useState<number>();
+
+  const handleNameFieldChange = event => {
+    const value = event.target.value;
+    setSubjectNameField(value);
+  };
+
+  const handleSubjectHoursFieldChange = event => {
+    const value = Number(event.target.value);
+    setSubjectHoursField(value);
+  };
+
   const handleChange = (event: SelectChangeEvent) => {
     const selectedTeacher = event.target.value;
     setTeacher(selectedTeacher);
   };
 
-  const { data: teachers, isLoading } = teacherApi.useGetAllTeachersQuery();
+  const handleEdit = () => {
+    assignSubjectsToTeacher({
+      teacherId: teacher,
+      subjectId: row.id,
+    });
+    setIsEditable(false);
+  };
+
+  const { data: teachers } = teacherApi.useGetAllTeachersQuery();
 
   return (
     <>
@@ -68,17 +89,29 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          <TextField size="small" defaultValue={row.name} />
+          <TextField
+            InputProps={{
+              readOnly: !isEditable,
+            }}
+            multiline
+            size="small"
+            defaultValue={row.name}
+            onChange={handleNameFieldChange}
+          />
         </TableCell>
         <TableCell align="left">
           <TextField
+            InputProps={{
+              readOnly: !isEditable,
+            }}
             size="small"
             type="number"
             defaultValue={row.hoursPerGroup}
+            onChange={handleSubjectHoursFieldChange}
           />
         </TableCell>
         <TableCell align="right" className="">
-          <IconButton>
+          <IconButton onClick={() => setIsEditable(!isEditable)}>
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleDeleteClick(row.id)}>
@@ -113,6 +146,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
                           readOnly: isLoading || !isEditable ? true : false,
                         }}
                       >
+                        <MenuItem value="">Никто</MenuItem>
                         {teachers?.map(teacher => (
                           <MenuItem key={teacher.id} value={teacher.id}>
                             {teacher.fullName}
@@ -126,26 +160,23 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
                     </FormControl>
 
                     <div className="flex gap-2 my-1">
-                      <Button
+                      <LoadingButton
+                        loading={isLoading}
                         onClick={() => setIsEditable(!isEditable)}
                         variant="contained"
                         size="small"
                       >
                         {isEditable ? 'отменить изменения' : 'изменить'}
-                      </Button>
+                      </LoadingButton>
+
                       {isEditable && (
-                        <Button
-                          onClick={() => {
-                            assignSubjectsToTeacher({
-                              teacherId: teacher,
-                              subjectId: row.id,
-                            });
-                            setIsEditable(false);
-                          }}
+                        <LoadingButton
+                          loading={isLoading}
+                          onClick={() => handleEdit()}
                           size="small"
                         >
                           подтвердить изменения
-                        </Button>
+                        </LoadingButton>
                       )}
                     </div>
                   </TableRow>
