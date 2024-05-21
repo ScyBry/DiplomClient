@@ -50,7 +50,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
                 </Link>
               </ListItemIcon>
               <div className="invisible group-hover:visible">
-                <Link to={`groupSchedule/${group.id}`}>
+                <Link to={`groupSchedule/${group.id}`} target="_blank">
                   <Tooltip title="Расписание">
                     <IconButton>
                       <EditCalendarIcon />

@@ -1,9 +1,5 @@
-import { FC, useEffect, useState } from 'react';
-import {
-  IScheduleSubject,
-  ISubject,
-  ScheduleSubject,
-} from '../../../types/types';
+import { FC, useEffect, useState, ChangeEvent } from 'react';
+import { ISubject, ScheduleSubject } from '../../../types/types';
 import {
   FormControl,
   IconButton,
@@ -11,8 +7,10 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  Typography,
 } from '@mui/material';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import { Link } from 'react-router-dom';
 
 type LessonItemProps = {
   subjects: ISubject[];
@@ -20,6 +18,7 @@ type LessonItemProps = {
   handleSaveClick: any;
   save: boolean;
   matchingSubject?: ScheduleSubject;
+  conflict?: any;
 };
 
 export const LessonItem: FC<LessonItemProps> = ({
@@ -28,13 +27,20 @@ export const LessonItem: FC<LessonItemProps> = ({
   index,
   handleSaveClick,
   matchingSubject,
+  conflict,
 }) => {
   const [selectedSubject, setSelectedSubject] = useState(
     matchingSubject ? matchingSubject.subjectId : '',
   );
 
+  useEffect(() => {
+    console.log('sjdfdsf', conflict);
+  }, [conflict]);
+
   const handleChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
+    if (value === '') setTextFieldValue('');
+
     setSelectedSubject(value);
   };
 
@@ -42,7 +48,7 @@ export const LessonItem: FC<LessonItemProps> = ({
     matchingSubject ? matchingSubject.roomNumber : '',
   );
 
-  const handleTextFieldChange = event => {
+  const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTextFieldValue(event.target.value);
   };
 
@@ -53,31 +59,54 @@ export const LessonItem: FC<LessonItemProps> = ({
         subjectId: selectedSubject,
         roomNumber: textFieldValue,
       });
-      setTextFieldValue('');
     }
   }, [save]);
 
   return (
-    <div className="px-4 py-1 flex gap-1">
-      <FormControl fullWidth>
-        <Select size="small" value={selectedSubject} onChange={handleChange}>
-          <MenuItem value={''}>Ничего</MenuItem>
+    <>
+      <div className="px-4 py-1 flex gap-2 items-center">
+        <Typography variant="body2" className="min-w-5">
+          {index + 1}
+        </Typography>
+
+        <Select
+          error={conflict}
+          fullWidth
+          size="small"
+          value={selectedSubject}
+          onChange={handleChange}
+        >
+          <MenuItem value="">Ничего</MenuItem>
           {subjects.map(subject => (
             <MenuItem key={subject.id} value={subject.id}>
               {subject.name}
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
-      <TextField
-        onChange={handleTextFieldChange}
-        className="w-24"
-        size="small"
-        defaultValue={matchingSubject ? matchingSubject.roomNumber : ''}
-      />
-      <IconButton>
-        <DragHandleIcon />
-      </IconButton>
-    </div>
+
+        <TextField
+          error={conflict}
+          onChange={handleTextFieldChange}
+          className="w-24"
+          size="small"
+          defaultValue={matchingSubject ? matchingSubject.roomNumber : ''}
+        />
+        <IconButton>
+          <DragHandleIcon />
+        </IconButton>
+      </div>
+      {conflict && (
+        <Link
+          to={`/groupSchedule/${conflict.DaySchedule.groupId}`}
+          target="_blank"
+        >
+          <div className="ml-11">
+            <Typography variant="body2" color="error">
+              {`Конфликт: Группа:  ${conflict.DaySchedule.Group.name}, Предмет: ${conflict.subject.name}`}
+            </Typography>
+          </div>
+        </Link>
+      )}
+    </>
   );
 };

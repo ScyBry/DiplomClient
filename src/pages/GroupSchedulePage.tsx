@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { subjectApi } from '../services/subjects.service';
 import { DaySchedule } from '../components/Tabs/DaySchedule/DaySchedule';
 import { WEAK_DAYS } from '../constants';
-import { Backdrop, CircularProgress, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { scheduleApi } from '../services/schedule.service';
 import { LoadingCircle } from '../components/Loading';
 
@@ -11,7 +11,6 @@ export const GroupSchedulePage = () => {
   const { id } = useParams();
 
   if (!id) {
-    // Обработка случая, когда id не определен (например, отображение сообщения об ошибке)
     return <div>Идентификатор группы не найден</div>;
   }
 
@@ -27,10 +26,6 @@ export const GroupSchedulePage = () => {
     isLoading: isScheduleLoading,
   } = scheduleApi.useGetGroupScheduleQuery(id);
 
-  useEffect(() => {
-    scheduleData;
-  }, [id, scheduleData]);
-
   if (isSubjectsLoading || isScheduleLoading) {
     return <LoadingCircle />;
   }
@@ -43,8 +38,6 @@ export const GroupSchedulePage = () => {
           const scheduleForDay = scheduleData.find(
             data => data.dayOfWeek === tab.label,
           );
-
-          console.log('Расписание на день: ', scheduleForDay);
           return (
             <div key={tab.id}>
               <Typography>{tab.label}</Typography>

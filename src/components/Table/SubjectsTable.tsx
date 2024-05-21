@@ -1,7 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { subjectApi } from '../../services/subjects.service';
-import { FC, useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 import { ISubject } from '../../types/types';
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -31,6 +31,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ApproveModal } from '../Modals/ApproveModal';
 import { LoadingButton } from '@mui/lab';
+import CheckIcon from '@mui/icons-material/Check';
 
 type RowProps = {
   row: ISubject;
@@ -38,22 +39,25 @@ type RowProps = {
 };
 
 const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
-  const [assignSubjectsToTeacher, { isLoading, isError, isSuccess }] =
+  const [assignSubjectsToTeacher, { isLoading }] =
     teacherApi.useAssignSubjectsToTeacherMutation();
+  const [editSubject] = subjectApi.useEditSubjectMutation(row.id);
 
   const [open, setOpen] = useState<boolean>(false);
   const [teacher, setTeacher] = useState<string>(row.teachers[0]?.id);
   const [isEditable, setIsEditable] = useState<boolean>(false);
-
+  const [editName, setEditName] = useState<boolean>(false);
   const [subjectNameField, setSubjectNameField] = useState<string>('');
   const [subjectHoursField, setSubjectHoursField] = useState<number>();
 
-  const handleNameFieldChange = event => {
+  const handleNameFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSubjectNameField(value);
   };
 
-  const handleSubjectHoursFieldChange = event => {
+  const handleSubjectHoursFieldChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
     const value = Number(event.target.value);
     setSubjectHoursField(value);
   };
@@ -63,12 +67,11 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
     setTeacher(selectedTeacher);
   };
 
-  const handleEdit = () => {
-    assignSubjectsToTeacher({
-      teacherId: teacher,
-      subjectId: row.id,
+  const handleEditClick = () => {
+    editSubject({
+      name: subjectNameField,
+      hoursPerGroup: subjectHoursField,
     });
-    setIsEditable(false);
   };
 
   const { data: teachers } = teacherApi.useGetAllTeachersQuery();
@@ -91,7 +94,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
         <TableCell component="th" scope="row">
           <TextField
             InputProps={{
-              readOnly: !isEditable,
+              readOnly: !editName,
             }}
             multiline
             size="small"
@@ -102,7 +105,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
         <TableCell align="left">
           <TextField
             InputProps={{
-              readOnly: !isEditable,
+              readOnly: !editName,
             }}
             size="small"
             type="number"
@@ -111,9 +114,16 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
           />
         </TableCell>
         <TableCell align="right" className="">
-          <IconButton onClick={() => setIsEditable(!isEditable)}>
-            <EditIcon />
-          </IconButton>
+          {editName ? (
+            <IconButton onClick={() => handleEditClick()}>
+              <CheckIcon />
+            </IconButton>
+          ) : (
+            <IconButton onClick={() => setEditName(!editName)}>
+              <EditIcon />
+            </IconButton>
+          )}
+
           <IconButton onClick={() => handleDeleteClick(row.id)}>
             <DeleteIcon />
           </IconButton>
@@ -172,7 +182,13 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
                       {isEditable && (
                         <LoadingButton
                           loading={isLoading}
-                          onClick={() => handleEdit()}
+                          onClick={() => {
+                            assignSubjectsToTeacher({
+                              teacherId: teacher,
+                              subjectId: row.id,
+                            });
+                            setIsEditable(false);
+                          }}
                           size="small"
                         >
                           подтвердить изменения
@@ -220,16 +236,18 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id }) => {
         component={Paper}
         sx={{
           minWidth: '650px',
-
           height: '90vh',
           overflow: 'auto',
         }}
       >
         <Table stickyHeader aria-label="collapsible table">
           <TableHead>
-            <Typography className="p-3" variant="h5">
-              Предметы
-            </Typography>
+            <div className="flex justify-between">
+              <Typography className="p-3" variant="h5">
+                Предметы
+              </Typography>
+              <TextField />
+            </div>
             <TableRow>
               <TableCell />
               <TableCell align="left">Предмет</TableCell>

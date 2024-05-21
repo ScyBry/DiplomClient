@@ -1,16 +1,13 @@
-import { Paper, Stack, Typography } from '@mui/material';
+import { Paper } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { Reorder } from 'framer-motion';
 import { LessonItem } from '../LessonItem/LessonItem';
-import {
-  IScheduleData,
-  IScheduleDay,
-  ISubject,
-  ScheduleSubject,
-} from '../../../types/types';
+import { IScheduleDay, ISubject, ScheduleSubject } from '../../../types/types';
 import { scheduleApi } from '../../../services/schedule.service';
 import { LoadingButton } from '@mui/lab';
 import { Alert } from '../../Alert';
+
+let conflict = null;
 
 type DayScheduleProps = {
   subjects: ISubject[];
@@ -25,12 +22,13 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   dayOfWeek,
   scheduleData,
 }) => {
-  const [saveDaySchedule, { isLoading, error, isError, isSuccess }] =
-    scheduleApi.useSaveDayScheduleMutation();
+  const [
+    saveDaySchedule,
+    { isLoading, data: conflicts, error, isError, isSuccess },
+  ] = scheduleApi.useSaveDayScheduleMutation();
 
-  const emptyArray = Array.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
   const [items, setItems] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-  const [save, setSave] = useState(false);
+  const [save, setSave] = useState<boolean>(false);
 
   const [selectedLessonItems, setSelectedLessonItems] = useState<
     IScheduleDay[]
@@ -53,7 +51,6 @@ export const DaySchedule: FC<DayScheduleProps> = ({
       dayOfWeek,
       daySubjects: selectedLessonItems,
     };
-    data;
 
     saveDaySchedule(data);
   };
@@ -69,7 +66,6 @@ export const DaySchedule: FC<DayScheduleProps> = ({
           variant="contained"
           size="small"
           loading={isLoading}
-          loadingPosition="end"
           onClick={handleSaveClick}
         >
           Подтвердить изменения
@@ -78,34 +74,25 @@ export const DaySchedule: FC<DayScheduleProps> = ({
           <LoadingButton
             size="small"
             loading={isLoading}
-            loadingPosition="end"
             onClick={handleSaveData}
           >
             Сохранить изменения
           </LoadingButton>
         )}
-        <Stack direction="row" gap={4}>
-          <Typography variant="subtitle2">#Зан.</Typography>
-          <Typography variant="subtitle2">Время</Typography>
-          <Typography variant="subtitle2">Кабинет</Typography>
-        </Stack>
+
         <Reorder.Group axis="y" values={items} onReorder={setItems}>
           <div className="flex">
-            <div className="flex flex-col">
-              {emptyArray.map(item => (
-                <div
-                  key={item}
-                  className="flex flex-col items-center justify-center min-h-12"
-                >
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
             <div>
               {items.map((item, index) => {
                 const matchingScheduleItem = scheduleData?.find(
                   scheduleItem => scheduleItem.orderNumber === item,
                 );
+
+                if (conflicts) {
+                  conflict = conflicts.find(dataItem => {
+                    return dataItem?.orderNumber == index;
+                  });
+                }
 
                 if (matchingScheduleItem) {
                   return (
@@ -116,6 +103,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
                         subjects={subjects}
                         handleSaveClick={handleItemClick}
                         matchingSubject={matchingScheduleItem}
+                        conflict={conflict}
                       />
                     </Reorder.Item>
                   );
@@ -135,6 +123,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
           </div>
         </Reorder.Group>
       </Paper>
+
       {isSuccess && <Alert severity="success">Сохранено успешно</Alert>}
       {isError && <Alert severity="error">{error.data.message}</Alert>}
     </>
