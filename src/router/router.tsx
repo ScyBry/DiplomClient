@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { GroupPage } from '../pages/GroupPage.tsx';
 import { MainLayout } from '../pages/MainLayout';
 import { TeachersPage } from '../pages/TeachersPage.tsx';
 import { ProtectedRoute } from './ProtectedRoute.tsx';
@@ -8,6 +7,7 @@ import { LoginForm } from '../components/Forms/AuthForms/LoginForm.tsx';
 import { GroupSchedulePage } from '../pages/GroupSchedulePage.tsx';
 import { ErrorPage } from '../pages/ErrorPage.tsx';
 import { MainPage } from '../pages/MainPage.tsx';
+import { GroupSubjectsPage } from '../pages/GroupSubjectsPage.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
 
       {
         path: '/groups/:id',
-        element: <GroupPage />,
+        element: <GroupSubjectsPage />,
       },
       {
         path: '/teachers',

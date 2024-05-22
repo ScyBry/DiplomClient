@@ -12,14 +12,14 @@ import {
   Typography,
 } from '@mui/material';
 import { TEACHER_TABLE_HEAD_ROWS } from '../../constants';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { ITeacher } from '../../types/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ApproveModal } from '../Modals/ApproveModal';
 import { teacherApi } from '../../services/teacher.service';
-import CheckIcon from '@mui/icons-material/Check';
+import { toast } from 'react-toastify';
 
 type TeachersTableProps = {
   teachers: ITeacher[];
@@ -30,7 +30,7 @@ export const TeachersTable: FC<TeachersTableProps> = ({
   teachers,
   setIsTeacherModalOpen,
 }) => {
-  const [deleteTeacher, { isSuccess, isError }] =
+  const [deleteTeacher, { isSuccess, isError, error }] =
     teacherApi.useDeleteTeacherMutation();
   const [selectedTeacher, setSelectedTeacher] = useState<ITeacher>();
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
@@ -44,6 +44,16 @@ export const TeachersTable: FC<TeachersTableProps> = ({
     deleteTeacher(selectedTeacher?.id);
     setIsApproveModalOpen(false);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Преподаватель успешно удален');
+    }
+
+    if (isError) {
+      toast.error(error.data.message);
+    }
+  }, [isSuccess, isError, error]);
 
   return (
     <>
@@ -114,22 +124,6 @@ export const TeachersTable: FC<TeachersTableProps> = ({
           isOpen={isApproveModalOpen}
           func={handleDelete}
         />
-      )}
-
-      {isSuccess && (
-        <Alert
-          className="absolute bottom-3 left-1"
-          icon={<CheckIcon fontSize="inherit" />}
-          severity="success"
-        >
-          Удалено успешно
-        </Alert>
-      )}
-
-      {isError && (
-        <Alert className="absolute bottom-3 left-1" severity="error">
-          Что-то пошло не так...
-        </Alert>
       )}
     </>
   );

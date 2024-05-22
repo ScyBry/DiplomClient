@@ -1,13 +1,13 @@
-import { Alert, Button, TextField, Typography } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { registerSchema, RegisterSchemaType } from '../../../utils/zod/zod.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userApi } from '../../../services/user.service.ts';
-import CheckIcon from '@mui/icons-material/Check';
 import { Link, useNavigate } from 'react-router-dom';
 import { setTokenToLocalStorage } from '../../../utils/axios/axiosBase.ts';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
@@ -29,11 +29,19 @@ export const RegisterForm = () => {
   };
 
   useEffect(() => {
+    if (isSuccess) {
+      toast.success('Зарегистрирован успешно');
+    }
+
+    if (isError) {
+      toast.error(error.data.message);
+    }
+
     if (data) {
       const result = setTokenToLocalStorage(data.token);
       if (result) navigate('/');
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, data, isError, error]);
 
   return (
     <div className="flex w-full h-[100vh] justify-center items-center">
@@ -94,22 +102,6 @@ export const RegisterForm = () => {
             Зарегистрироваться
           </LoadingButton>
         </div>
-
-        {isSuccess && (
-          <Alert
-            className="absolute bottom-2 left-2"
-            icon={<CheckIcon fontSize="inherit" />}
-            severity="success"
-          >
-            Аккаунт успешно создан
-          </Alert>
-        )}
-
-        {isError && (
-          <Alert className="absolute bottom-2 left-2" severity="error">
-            {error.data.message}
-          </Alert>
-        )}
       </form>
     </div>
   );

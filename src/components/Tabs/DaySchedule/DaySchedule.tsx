@@ -1,11 +1,13 @@
-import { Paper } from '@mui/material';
+import { IconButton, Paper, Tooltip } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { Reorder } from 'framer-motion';
 import { LessonItem } from '../LessonItem/LessonItem';
 import { IScheduleDay, ISubject, ScheduleSubject } from '../../../types/types';
 import { scheduleApi } from '../../../services/schedule.service';
-import { LoadingButton } from '@mui/lab';
-import { Alert } from '../../Alert';
+
+import { toast } from 'react-toastify';
+import SaveIcon from '@mui/icons-material/Save';
+import SendIcon from '@mui/icons-material/Send';
 
 let conflict = null;
 
@@ -45,69 +47,64 @@ export const DaySchedule: FC<DayScheduleProps> = ({
     setTimeout(() => setSave(false), 3000);
   };
 
-  const handleSaveData = () => {
+  const handleSaveData = async () => {
     const data = {
       groupId,
       dayOfWeek,
       daySubjects: selectedLessonItems,
     };
 
-    saveDaySchedule(data);
+    try {
+      await saveDaySchedule(data);
+    } catch (error) {
+      console.error('Error saving schedule:', error);
+      toast.error(error.data.message);
+    }
   };
 
   useEffect(() => {
-    selectedLessonItems;
-  }, [selectedLessonItems]);
+    if (isSuccess) {
+      toast.success('Расписание успешно сохранено!');
+    }
+    if (isError) {
+      toast.error(error.data.message);
+    }
+  }, [isSuccess, isError, error]);
 
   return (
-    <>
-      <Paper className="p-2">
-        <LoadingButton
-          variant="contained"
-          size="small"
-          loading={isLoading}
-          onClick={handleSaveClick}
-        >
-          Подтвердить изменения
-        </LoadingButton>
-        {selectedLessonItems.length === 12 && save && (
-          <LoadingButton
+    <div className="p-2">
+      <Tooltip title="Сохранить изменения">
+        <IconButton size="small" disabled={isLoading} onClick={handleSaveClick}>
+          <SaveIcon />
+        </IconButton>
+      </Tooltip>
+      {selectedLessonItems.length === 12 && save && (
+        <Tooltip title="Отправить изменения">
+          <IconButton
             size="small"
-            loading={isLoading}
+            disabled={isLoading}
             onClick={handleSaveData}
           >
-            Сохранить изменения
-          </LoadingButton>
-        )}
+            <SendIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
-        <Reorder.Group axis="y" values={items} onReorder={setItems}>
-          <div className="flex">
-            <div>
-              {items.map((item, index) => {
-                const matchingScheduleItem = scheduleData?.find(
-                  scheduleItem => scheduleItem.orderNumber === item,
-                );
+      <Reorder.Group axis="y" values={items} onReorder={setItems}>
+        <div className="flex">
+          <div>
+            {items.map((item, index) => {
+              const matchingScheduleItem = scheduleData?.find(
+                scheduleItem => scheduleItem.orderNumber === item,
+              );
 
-                if (conflicts) {
-                  conflict = conflicts.find(dataItem => {
-                    return dataItem?.orderNumber == index;
-                  });
-                }
+              if (conflicts) {
+                conflict = conflicts.find(dataItem => {
+                  return dataItem?.orderNumber == index;
+                });
+              }
 
-                if (matchingScheduleItem) {
-                  return (
-                    <Reorder.Item key={item} value={item}>
-                      <LessonItem
-                        save={save}
-                        index={index}
-                        subjects={subjects}
-                        handleSaveClick={handleItemClick}
-                        matchingSubject={matchingScheduleItem}
-                        conflict={conflict}
-                      />
-                    </Reorder.Item>
-                  );
-                }
+              if (matchingScheduleItem) {
                 return (
                   <Reorder.Item key={item} value={item}>
                     <LessonItem
@@ -115,17 +112,26 @@ export const DaySchedule: FC<DayScheduleProps> = ({
                       index={index}
                       subjects={subjects}
                       handleSaveClick={handleItemClick}
+                      matchingSubject={matchingScheduleItem}
+                      conflict={conflict}
                     />
                   </Reorder.Item>
                 );
-              })}
-            </div>
+              }
+              return (
+                <Reorder.Item key={item} value={item}>
+                  <LessonItem
+                    save={save}
+                    index={index}
+                    subjects={subjects}
+                    handleSaveClick={handleItemClick}
+                  />
+                </Reorder.Item>
+              );
+            })}
           </div>
-        </Reorder.Group>
-      </Paper>
-
-      {isSuccess && <Alert severity="success">Сохранено успешно</Alert>}
-      {isError && <Alert severity="error">{error.data.message}</Alert>}
-    </>
+        </div>
+      </Reorder.Group>
+    </div>
   );
 };

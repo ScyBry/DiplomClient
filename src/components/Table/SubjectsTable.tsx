@@ -1,8 +1,8 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { subjectApi } from '../../services/subjects.service';
-import { ChangeEvent, FC, useState } from 'react';
-import { ISubject } from '../../types/types';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { ISubject, ITeacher } from '../../types/types';
 import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
@@ -22,6 +22,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { teacherApi } from '../../services/teacher.service';
@@ -30,22 +31,104 @@ import { AddSubjectForm } from '../Forms/AddSubjectForm';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ApproveModal } from '../Modals/ApproveModal';
-import { LoadingButton } from '@mui/lab';
 import CheckIcon from '@mui/icons-material/Check';
+import { toast } from 'react-toastify';
+import { TransferList } from '../TransferList';
 
 type RowProps = {
   row: ISubject;
   handleDeleteClick: (subjectId: string) => void;
 };
 
+type SubjectTableProps = {
+  id: string;
+  subjects: ISubject[];
+};
+
+export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
+  const [deleteSubject] = subjectApi.useDeleteSubjectMutation();
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
+
+  const handleDeleteClick = (subjectId: string) => {
+    setSelectedSubject(subjectId);
+    setIsApproveModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    deleteSubject(selectedSubject);
+    setIsApproveModalOpen(false);
+  };
+
+  return (
+    <>
+      <TableContainer
+        component={Paper}
+        sx={{
+          minWidth: '650px',
+          height: '90vh',
+          overflow: 'auto',
+        }}
+      >
+        <Table stickyHeader aria-label="collapsible table">
+          <TableHead>
+            <div className="flex justify-between">
+              <Typography className="p-3" variant="h5">
+                Предметы
+              </Typography>
+            </div>
+            <TableRow>
+              <TableCell />
+              <TableCell align="left">Предмет</TableCell>
+              <TableCell align="left">Кол-во часов</TableCell>
+              <TableCell align="right">
+                <Tooltip title="Добавить новый предмет">
+                  <IconButton onClick={() => setIsAddModalOpen(true)}>
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {subjects &&
+              subjects.map(subject => (
+                <Row
+                  handleDeleteClick={handleDeleteClick}
+                  key={subject.name}
+                  row={subject}
+                />
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+        <AddSubjectForm groupId={id} />
+      </Modal>
+
+      {selectedSubject && (
+        <ApproveModal
+          text={`Вы действительно хотите удалить предмет?`}
+          handleClose={() => setIsApproveModalOpen(false)}
+          isOpen={isApproveModalOpen}
+          func={handleDelete}
+        />
+      )}
+    </>
+  );
+};
+
 const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
-  const [assignSubjectsToTeacher, { isLoading }] =
+  const [assignSubjectsToTeacher, { isLoading, isSuccess, isError, error }] =
     teacherApi.useAssignSubjectsToTeacherMutation();
   const [editSubject] = subjectApi.useEditSubjectMutation(row.id);
+  const { data: teachers } = teacherApi.useGetAllTeachersQuery();
 
   const [open, setOpen] = useState<boolean>(false);
   const [teacher, setTeacher] = useState<string>(row.teachers[0]?.id);
-  const [isEditable, setIsEditable] = useState<boolean>(false);
   const [editName, setEditName] = useState<boolean>(false);
   const [subjectNameField, setSubjectNameField] = useState<string>('');
   const [subjectHoursField, setSubjectHoursField] = useState<number>();
@@ -62,11 +145,6 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
     setSubjectHoursField(value);
   };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    const selectedTeacher = event.target.value;
-    setTeacher(selectedTeacher);
-  };
-
   const handleEditClick = () => {
     editSubject({
       name: subjectNameField,
@@ -74,7 +152,27 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
     });
   };
 
-  const { data: teachers } = teacherApi.useGetAllTeachersQuery();
+  const handleAssignTeachers = async (selectedTeachers: ITeacher[]) => {
+    try {
+      await assignSubjectsToTeacher({
+        teachers: selectedTeachers,
+        subjectId: row.id,
+      }).unwrap();
+      toast.success('Преподаватели успешно назначены');
+    } catch (err) {
+      toast.error('Ошибка при назначении преподавателей');
+    }
+  };
+
+  useEffect(() => {
+    if (teachers) {
+    }
+  }, [teachers, row]);
+
+  const filteredTeachers = teachers?.filter(
+    teacher =>
+      !row.teachers.some(assignedTeacher => assignedTeacher.id === teacher.id),
+  );
 
   return (
     <>
@@ -83,11 +181,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
         sx={{ '& > *': { borderBottom: 'unset' } }}
       >
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
+          <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
@@ -136,154 +230,24 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
               <Typography variant="h6" gutterBottom component="div">
                 Преподаватели предмета
               </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow></TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                      <InputLabel id="teachers-select-label">
-                        Преподаватель
-                      </InputLabel>
-                      <Select
-                        labelId="teachers-select-label"
-                        value={teacher}
-                        label="Преподаватель"
-                        onChange={handleChange}
-                        defaultValue={row.teachers[0]?.id}
-                        inputProps={{
-                          readOnly: isLoading || !isEditable ? true : false,
-                        }}
-                      >
-                        <MenuItem value="">Никто</MenuItem>
-                        {teachers?.map(teacher => (
-                          <MenuItem key={teacher.id} value={teacher.id}>
-                            {teacher.fullName}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        Выберите преподавателя, которого хотите назначить на
-                        предмет
-                      </FormHelperText>
-                    </FormControl>
-
-                    <div className="flex gap-2 my-1">
-                      <LoadingButton
-                        loading={isLoading}
-                        onClick={() => setIsEditable(!isEditable)}
-                        variant="contained"
-                        size="small"
-                      >
-                        {isEditable ? 'отменить изменения' : 'изменить'}
-                      </LoadingButton>
-
-                      {isEditable && (
-                        <LoadingButton
-                          loading={isLoading}
-                          onClick={() => {
-                            assignSubjectsToTeacher({
-                              teacherId: teacher,
-                              subjectId: row.id,
-                            });
-                            setIsEditable(false);
-                          }}
-                          size="small"
-                        >
-                          подтвердить изменения
-                        </LoadingButton>
-                      )}
-                    </div>
-                  </TableRow>
-                </TableBody>
-              </Table>
+              <TableCell>
+                {teachers && filteredTeachers && row.teachers && (
+                  <TransferList
+                    isLoading={isLoading}
+                    teachers={teachers}
+                    assignedTeachers={row.teachers}
+                    leftTitle="Доступные преподаватели"
+                    rightTitle="Выбранные преподаватели"
+                    onTransfer={selectedTeachers =>
+                      handleAssignTeachers(selectedTeachers)
+                    }
+                  />
+                )}
+              </TableCell>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </>
-  );
-};
-
-type SubjectTableProps = {
-  id: string;
-};
-
-export const SubjectsTable: FC<SubjectTableProps> = ({ id }) => {
-  const { data: subjects, isSuccess } =
-    subjectApi.useGetAllGroupSubjectsQuery(id);
-
-  const [deleteSubject] = subjectApi.useDeleteSubjectMutation();
-
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [selectedSubject, setSelectedSubject] = useState<string>('');
-  const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
-
-  const handleDeleteClick = (subjectId: string) => {
-    setSelectedSubject(subjectId);
-    setIsApproveModalOpen(true);
-  };
-
-  const handleDelete = () => {
-    deleteSubject(selectedSubject);
-    setIsApproveModalOpen(false);
-  };
-
-  return (
-    <>
-      <TableContainer
-        component={Paper}
-        sx={{
-          minWidth: '650px',
-          height: '90vh',
-          overflow: 'auto',
-        }}
-      >
-        <Table stickyHeader aria-label="collapsible table">
-          <TableHead>
-            <div className="flex justify-between">
-              <Typography className="p-3" variant="h5">
-                Предметы
-              </Typography>
-              <TextField />
-            </div>
-            <TableRow>
-              <TableCell />
-              <TableCell align="left">Предмет</TableCell>
-              <TableCell align="left">Кол-во часов</TableCell>
-              <TableCell align="right">
-                <IconButton onClick={() => setIsAddModalOpen(true)}>
-                  <AddIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {isSuccess &&
-              subjects.map(subject => (
-                <Row
-                  handleDeleteClick={handleDeleteClick}
-                  key={subject.name}
-                  row={subject}
-                />
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
-        <AddSubjectForm groupId={id} />
-      </Modal>
-
-      {selectedSubject && (
-        <ApproveModal
-          text={`Вы действительно хотите удалить предмет?`}
-          handleClose={() => setIsApproveModalOpen(false)}
-          isOpen={isApproveModalOpen}
-          func={handleDelete}
-        />
-      )}
     </>
   );
 };

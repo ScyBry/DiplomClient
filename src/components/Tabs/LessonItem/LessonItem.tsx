@@ -75,6 +75,7 @@ export const LessonItem: FC<LessonItemProps> = ({
           size="small"
           value={selectedSubject}
           onChange={handleChange}
+          className="min-w-[300px]"
         >
           <MenuItem value="">Ничего</MenuItem>
           {subjects.map(subject => (

@@ -3,10 +3,9 @@ import { LoadingButton } from '@mui/lab';
 import { useForm } from 'react-hook-form';
 import { departmentApi } from '../../services/department.service';
 import { departmentSchema, DepartmentSchemaType } from '../../utils/zod/zod';
-import { Button, TextField, Typography } from '@mui/material';
-import { Alert } from '../Alert';
-
+import { TextField, Typography } from '@mui/material';
 import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 export const AddDepartmentForm = () => {
   const [createDepartment, { isSuccess, error, isError, isLoading }] =
@@ -20,12 +19,19 @@ export const AddDepartmentForm = () => {
     resolver: zodResolver(departmentSchema),
     mode: 'onChange',
   });
-
-  const onSubmit = (data: DepartmentSchemaType) => {
-    createDepartment(data);
-
+  const onSubmit = async (data: DepartmentSchemaType) => {
+    await createDepartment(data);
     reset();
   };
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(error.data.message);
+    }
+    if (isSuccess) {
+      toast.success('Отделение успешно добавлено');
+    }
+  }, [isSuccess, isError, error]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -48,11 +54,6 @@ export const AddDepartmentForm = () => {
       >
         Добавить отделение
       </LoadingButton>
-
-      {isSuccess && (
-        <Alert severity="success">Отделение успешно добавлено</Alert>
-      )}
-      {isError && <Alert severity="error">{error?.data?.message}</Alert>}
     </form>
   );
 };

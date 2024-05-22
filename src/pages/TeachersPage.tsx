@@ -4,6 +4,7 @@ import { Modal } from '../components/Modal/Modal';
 import { teacherApi } from '../services/teacher.service';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { TeachersTable } from '../components/Table/TeachersTable';
+import { Helmet } from 'react-helmet-async';
 
 export const TeachersPage = () => {
   const {
@@ -23,7 +24,10 @@ export const TeachersPage = () => {
   }
 
   return (
-    <div className="px-3">
+    <div className="px-3 py-2">
+      <Helmet>
+        <title>Преподаватели | Расписание</title>
+      </Helmet>
       {isSuccess && (
         <TeachersTable
           teachers={teachers}

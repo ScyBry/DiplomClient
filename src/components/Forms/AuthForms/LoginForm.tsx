@@ -1,13 +1,13 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginSchema, LoginSchemaType } from '../../../utils/zod/zod.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, TextField, Typography } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import CheckIcon from '@mui/icons-material/Check';
 import { userApi } from '../../../services/user.service.ts';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { setTokenToLocalStorage } from '../../../utils/axios/axiosBase.ts';
 import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 
 export const LoginForm = () => {
   const navigate = useNavigate();
@@ -31,12 +31,20 @@ export const LoginForm = () => {
   };
 
   useEffect(() => {
+    if (isError) {
+      toast.error(error.data.message);
+    }
+
+    if (isSuccess) {
+      toast.success('Успешно авторизован');
+    }
+
     if (data) {
       const result = setTokenToLocalStorage(data.token);
 
       if (result) navigate('/');
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, data, error, isError]);
 
   return (
     <div className="flex w-full h-[100vh] justify-center items-center">
@@ -84,23 +92,6 @@ export const LoginForm = () => {
             Войти
           </LoadingButton>
         </div>
-
-        {isSuccess && (
-          <Alert
-            className="absolute bottom-2 left-2"
-            icon={<CheckIcon fontSize="inherit" />}
-            severity="success"
-          >
-            Авторизован
-          </Alert>
-        )}
-
-        {isError && (
-          <Alert className="absolute bottom-2 left-2" severity="error">
-            {/* Handle specific errors here */}
-            {error.data?.message}
-          </Alert>
-        )}
       </form>
     </div>
   );

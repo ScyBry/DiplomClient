@@ -24,7 +24,7 @@ export const ExportToExcel = () => {
 
   return (
     <Button variant="contained" color="primary" onClick={handleExport}>
-      Export to Excel
+      Экспортировать в таблицу
     </Button>
   );
 };

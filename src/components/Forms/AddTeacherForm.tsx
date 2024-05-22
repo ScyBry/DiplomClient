@@ -4,9 +4,12 @@ import { addTeacherSchema, AddTeacherSchemaType } from '../../utils/zod/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { teacherApi } from '../../services/teacher.service';
 import { LoadingButton } from '@mui/lab';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 export const AddTeacherForm = () => {
-  const [createTeacher, { isLoading }] = teacherApi.useCreateTeacherMutation();
+  const [createTeacher, { isLoading, isSuccess, error, isError }] =
+    teacherApi.useCreateTeacherMutation();
 
   const {
     register,
@@ -23,6 +26,15 @@ export const AddTeacherForm = () => {
     createTeacher({ ...rest, totalHours: Number(totalHours) });
     reset();
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Преподаватель успешно добавлен');
+    }
+    if (isError) {
+      toast.error(error.data.message);
+    }
+  }, [isSuccess, isError, error]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>

@@ -68,6 +68,7 @@ export interface IScheduleData {
   id: string;
   dayOfWeek: string;
   groupId: string;
+  Group: IGroup;
   scheduleSubjects: ScheduleSubject[];
 }
 

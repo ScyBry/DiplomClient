@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { subjectSchema, SubjectSchemaType } from '../../utils/zod/zod';
-import { Button, TextField, Typography } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { subjectApi } from '../../services/subjects.service';
-import { Alert } from '../Alert';
-import { FC } from 'react';
+
+import { FC, useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 
 type AddSubjectFormProps = {
   groupId: string;
@@ -36,6 +37,17 @@ export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
 
     createSubject(subjectData);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Предмет успешно добавлен');
+    }
+
+    if (isError) {
+      toast.error(error.data.message);
+    }
+  }, [isError, isSuccess, error]);
+
   return (
     <>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -69,10 +81,6 @@ export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
           Добавить предмет
         </LoadingButton>
       </form>
-
-      {isSuccess && <Alert severity="success">Предмет успешно добавлен</Alert>}
-
-      {isError && <Alert severity="error">{error.data.message}</Alert>}
     </>
   );
 };

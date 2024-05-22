@@ -33,12 +33,12 @@ export const TEACHER_TABLE_HEAD_ROWS = [
 
 export const TASKBAR_NAVIGATION = [
   {
-    title: 'Преподаватели',
-    route: '/teachers',
+    title: 'Главная',
+    route: '/',
   },
   {
-    title: 'Расписание',
-    route: '/schedule',
+    title: 'Преподаватели',
+    route: '/teachers',
   },
 ];
 

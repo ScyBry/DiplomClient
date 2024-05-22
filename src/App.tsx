@@ -1,7 +1,12 @@
 import './App.css';
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
-  return <div></div>;
+  return (
+    <>
+      <Toaster></Toaster>
+    </>
+  );
 }
 
 export default App;

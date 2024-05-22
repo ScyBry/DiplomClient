@@ -35,13 +35,18 @@ export const teacherApi = createApi({
       invalidatesTags: ['Teachers'],
     }),
 
-    assignSubjectsToTeacher: build.mutation({
-      query: ({ teacherId, subjectId }) => ({
+    assignSubjectsToTeacher: build.mutation<
+      void,
+      { subjectId: string; teachers: ITeacher[] }
+    >({
+      query: ({ subjectId, teachers }) => ({
         url: API_ROUTES.assignSubjectsToTeacher,
         method: 'POST',
         params: {
-          teacherId,
           subjectId,
+        },
+        body: {
+          teachers,
         },
       }),
     }),

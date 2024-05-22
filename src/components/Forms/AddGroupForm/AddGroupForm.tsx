@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, MenuItem, Select, TextField, Typography } from '@mui/material';
-import { FC } from 'react';
+import { MenuItem, Select, TextField, Typography } from '@mui/material';
+import { FC, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { departmentApi } from '../../../services/department.service';
 import { groupSchema, GroupSchemaType } from '../../../utils/zod/zod';
-import { Alert } from '../../Alert';
+
 import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 
 type AddGroupFormProps = {
   departmentId: string;
@@ -30,6 +31,16 @@ export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
     createGroup(data);
     reset();
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Группа успешно добавлена');
+    }
+
+    if (isError) {
+      toast.error(error.data.message);
+    }
+  }, [isError, isSuccess, error]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -65,9 +76,6 @@ export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
       >
         Добавить группу
       </LoadingButton>
-
-      {isSuccess && <Alert severity="success">Группа успешно добавлена</Alert>}
-      {isError && <Alert severity="error">{error?.data?.message}</Alert>}
     </form>
   );
 };
