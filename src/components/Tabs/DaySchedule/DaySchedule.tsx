@@ -24,10 +24,8 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   dayOfWeek,
   scheduleData,
 }) => {
-  const [
-    saveDaySchedule,
-    { isLoading, data: conflicts, error, isError, isSuccess },
-  ] = scheduleApi.useSaveDayScheduleMutation();
+  const [saveDaySchedule, { isLoading, data: conflicts }] =
+    scheduleApi.useSaveDayScheduleMutation();
 
   const [items, setItems] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
   const [save, setSave] = useState<boolean>(false);
@@ -47,29 +45,18 @@ export const DaySchedule: FC<DayScheduleProps> = ({
     setTimeout(() => setSave(false), 3000);
   };
 
-  const handleSaveData = async () => {
+  const handleSaveData = () => {
     const data = {
       groupId,
       dayOfWeek,
       daySubjects: selectedLessonItems,
     };
 
-    try {
-      await saveDaySchedule(data);
-    } catch (error) {
-      console.error('Error saving schedule:', error);
-      toast.error(error.data.message);
-    }
+    saveDaySchedule(data)
+      .unwrap()
+      .then(() => toast.success('Расписание успешно сохранено'))
+      .catch(error => toast.error(error.data.message));
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Расписание успешно сохранено!');
-    }
-    if (isError) {
-      toast.error(error.data.message);
-    }
-  }, [isSuccess, isError, error]);
 
   return (
     <div className="p-2">

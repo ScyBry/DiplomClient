@@ -1,8 +1,12 @@
 export const API_ROUTES = {
   getAllDepartments: 'department/getAllDepartments',
   createDepartment: 'department/createDepartment',
+  deleteDepartment: 'department/deleteDepartment',
+  updateDepartment: 'department/updateDepartment',
+
   createGroup: 'group/createGroup',
   deleteGroup: 'group/deleteGroup',
+  editGroup: 'group/updateGroup',
   getOneGroup: 'group/findOneGroup',
 
   getAllTeachers: 'teacher/getAllTeachers',

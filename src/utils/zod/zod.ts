@@ -84,3 +84,23 @@ export const subjectSchema = z.object({
   hoursPerGroup: z.string().min(1, { message: 'Поле не может быть пустым' }),
 });
 export type SubjectSchemaType = z.infer<typeof subjectSchema>;
+
+export const departmentEditSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: 'Название отделения не должно быть пустым' })
+    .max(100, {
+      message: 'Название отделения не должно превышать 100 символов',
+    }),
+});
+export type DepartmentEditSchemaType = z.infer<typeof departmentEditSchema>;
+
+export const groupEditSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: 'Название группы не должно быть пустым' })
+    .max(100, {
+      message: 'Название группы не должно превышать 100 символов',
+    }),
+});
+export type GroupEditSchemaType = z.infer<typeof groupEditSchema>;

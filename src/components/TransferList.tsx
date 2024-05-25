@@ -182,7 +182,6 @@ export const TransferList: React.FC<ITeacherListProps> = ({
             variant="contained"
             size="small"
             onClick={handleTransfer}
-            disabled={right.length === 0}
             aria-label="transfer"
           >
             сохранить

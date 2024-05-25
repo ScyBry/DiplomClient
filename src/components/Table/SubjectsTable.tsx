@@ -7,14 +7,8 @@ import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Collapse,
-  FormControl,
-  FormHelperText,
   IconButton,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
-  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
@@ -122,16 +116,20 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
 };
 
 const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
-  const [assignSubjectsToTeacher, { isLoading, isSuccess, isError, error }] =
-    teacherApi.useAssignSubjectsToTeacherMutation();
-  const [editSubject] = subjectApi.useEditSubjectMutation(row.id);
-  const { data: teachers } = teacherApi.useGetAllTeachersQuery();
+  if (!row) {
+    return <div>Пиздец</div>;
+  }
 
+  const [assignSubjectsToTeacher, { isLoading }] =
+    teacherApi.useAssignSubjectsToTeacherMutation();
+  const [editSubject] = subjectApi.useEditSubjectMutation();
+  const { data: teachers } = teacherApi.useGetAllTeachersQuery();
+  const [isEditable, setIsEditable] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
-  const [teacher, setTeacher] = useState<string>(row.teachers[0]?.id);
-  const [editName, setEditName] = useState<boolean>(false);
-  const [subjectNameField, setSubjectNameField] = useState<string>('');
-  const [subjectHoursField, setSubjectHoursField] = useState<number>();
+  const [subjectNameField, setSubjectNameField] = useState<string>(row.name);
+  const [subjectHoursField, setSubjectHoursField] = useState<number>(
+    row.hoursPerGroup,
+  );
 
   const handleNameFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -146,32 +144,35 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
   };
 
   const handleEditClick = () => {
-    editSubject({
-      name: subjectNameField,
-      hoursPerGroup: subjectHoursField,
-    });
-  };
-
-  const handleAssignTeachers = async (selectedTeachers: ITeacher[]) => {
-    try {
-      await assignSubjectsToTeacher({
-        teachers: selectedTeachers,
-        subjectId: row.id,
-      }).unwrap();
-      toast.success('Преподаватели успешно назначены');
-    } catch (err) {
-      toast.error('Ошибка при назначении преподавателей');
+    if (row.id) {
+      editSubject({
+        id: row.id,
+        subject: {
+          name: subjectNameField,
+          hoursPerGroup: Number(subjectHoursField),
+        },
+      })
+        .unwrap()
+        .then(() => {
+          toast.success('Информация предмета успешно изменена');
+        })
+        .catch(error => toast.error(error.data.message));
     }
   };
 
-  useEffect(() => {
-    if (teachers) {
-    }
-  }, [teachers, row]);
+  const handleAssignTeachers = (selectedTeachers: ITeacher[]) => {
+    assignSubjectsToTeacher({
+      teachers: selectedTeachers,
+      subjectId: row.id,
+    })
+      .unwrap()
+      .then(() => toast.success('Преподаватели успешно назначены'))
+      .catch(error => toast.error(error.data.message));
+  };
 
   const filteredTeachers = teachers?.filter(
     teacher =>
-      !row.teachers.some(assignedTeacher => assignedTeacher.id === teacher.id),
+      !row?.teachers.some(assignedTeacher => assignedTeacher.id === teacher.id),
   );
 
   return (
@@ -188,7 +189,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
         <TableCell component="th" scope="row">
           <TextField
             InputProps={{
-              readOnly: !editName,
+              readOnly: !isEditable,
             }}
             multiline
             size="small"
@@ -199,7 +200,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
         <TableCell align="left">
           <TextField
             InputProps={{
-              readOnly: !editName,
+              readOnly: !isEditable,
             }}
             size="small"
             type="number"
@@ -208,19 +209,25 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
           />
         </TableCell>
         <TableCell align="right" className="">
-          {editName ? (
-            <IconButton onClick={() => handleEditClick()}>
-              <CheckIcon />
-            </IconButton>
+          {isEditable ? (
+            <Tooltip title="Подтвердить изменения">
+              <IconButton onClick={() => handleEditClick()}>
+                <CheckIcon />
+              </IconButton>
+            </Tooltip>
           ) : (
-            <IconButton onClick={() => setEditName(!editName)}>
-              <EditIcon />
-            </IconButton>
+            <Tooltip title="Редактировать">
+              <IconButton onClick={() => setIsEditable(!isEditable)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
           )}
 
-          <IconButton onClick={() => handleDeleteClick(row.id)}>
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title="Удалить">
+            <IconButton onClick={() => handleDeleteClick(row.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow>

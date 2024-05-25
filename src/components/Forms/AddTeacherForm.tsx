@@ -41,20 +41,21 @@ export const AddTeacherForm = () => {
       <Typography variant="h6">Добавить преподавателя</Typography>
       <TextField
         fullWidth
+        label="Фамилия"
+        placeholder="Введите фамилию"
+        {...register('lastName')}
+        error={!!errors.lastName}
+        helperText={errors.lastName?.message}
+      />  
+      <TextField
+        fullWidth
         label="Имя"
         placeholder="Введите имя"
         {...register('firstName')}
         error={!!errors.firstName}
         helperText={errors.firstName?.message}
       />
-      <TextField
-        fullWidth
-        label="Фамилия"
-        placeholder="Введите фамилию"
-        {...register('lastName')}
-        error={!!errors.lastName}
-        helperText={errors.lastName?.message}
-      />
+
       <TextField
         fullWidth
         label="Отчество"

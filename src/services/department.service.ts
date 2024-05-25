@@ -26,6 +26,32 @@ export const departmentApi = createApi({
       }),
       invalidatesTags: ['Department'],
     }),
+
+    editDepartment: build.mutation<void, { id: string; name: string }>({
+      query: ({ id, name }) => ({
+        url: API_ROUTES.updateDepartment,
+        method: 'PATCH',
+        params: {
+          id,
+        },
+        body: {
+          name,
+        },
+      }),
+      invalidatesTags: ['Department'],
+    }),
+
+    deleteDepartment: build.mutation<void, string>({
+      query: departmentId => ({
+        url: API_ROUTES.deleteDepartment,
+        method: 'DELETE',
+        params: {
+          id: departmentId,
+        },
+      }),
+      invalidatesTags: ['Department'],
+    }),
+
     createGroup: build.mutation({
       query: group => ({
         url: API_ROUTES.createGroup,
@@ -34,6 +60,21 @@ export const departmentApi = createApi({
       }),
       invalidatesTags: ['Group', 'Department'],
     }),
+
+    editGroup: build.mutation({
+      query: ({ id, name }) => ({
+        url: API_ROUTES.editGroup,
+        method: 'PATCH',
+        params: {
+          id,
+        },
+        body: {
+          name,
+        },
+      }),
+      invalidatesTags: ['Group', 'Department'],
+    }),
+
     deleteGroup: build.mutation({
       query: groupId => ({
         url: API_ROUTES.deleteGroup,
@@ -57,7 +98,7 @@ export const departmentApi = createApi({
           withSubjects,
         },
       }),
-      providesTags: ['Group'],
+      providesTags: result => ['Group'],
     }),
 
     getAllTeachers: build.query<ITeacher[]>({

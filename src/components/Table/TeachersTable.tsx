@@ -9,6 +9,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { TEACHER_TABLE_HEAD_ROWS } from '../../constants';
@@ -20,6 +21,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { ApproveModal } from '../Modals/ApproveModal';
 import { teacherApi } from '../../services/teacher.service';
 import { toast } from 'react-toastify';
+import CheckIcon from '@mui/icons-material/Check';
+import { useForm } from 'react-hook-form';
 
 type TeachersTableProps = {
   teachers: ITeacher[];
@@ -30,10 +33,12 @@ export const TeachersTable: FC<TeachersTableProps> = ({
   teachers,
   setIsTeacherModalOpen,
 }) => {
-  const [deleteTeacher, { isSuccess, isError, error }] =
-    teacherApi.useDeleteTeacherMutation();
+  const { register, getValues } = useForm({ mode: 'onChange' });
+
+  const [deleteTeacher] = teacherApi.useDeleteTeacherMutation();
   const [selectedTeacher, setSelectedTeacher] = useState<ITeacher>();
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
+  const [isEditable, setIsEditable] = useState<boolean>(false);
 
   const handleDeleteClick = (teacher: ITeacher) => {
     setSelectedTeacher(teacher);
@@ -41,19 +46,12 @@ export const TeachersTable: FC<TeachersTableProps> = ({
   };
 
   const handleDelete = () => {
-    deleteTeacher(selectedTeacher?.id);
+    deleteTeacher(selectedTeacher?.id)
+      .unwrap()
+      .then(() => toast.success('Преподаватель успешно удален'))
+      .catch(error => toast.error(error.data.message));
     setIsApproveModalOpen(false);
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Преподаватель успешно удален');
-    }
-
-    if (isError) {
-      toast.error(error.data.message);
-    }
-  }, [isSuccess, isError, error]);
 
   return (
     <>
@@ -78,9 +76,11 @@ export const TeachersTable: FC<TeachersTableProps> = ({
                 </TableCell>
               ))}
               <TableCell align="right">
-                <IconButton onClick={() => setIsTeacherModalOpen(true)}>
-                  <AddIcon />
-                </IconButton>
+                <Tooltip title="Добавить преподавателя">
+                  <IconButton onClick={() => setIsTeacherModalOpen(true)}>
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -89,28 +89,57 @@ export const TeachersTable: FC<TeachersTableProps> = ({
               <TableRow key={teacher.createdAt} className="hover:bg-gray-100">
                 <TableCell align="left">
                   <TextField
-                    InputProps={{
-                      readOnly: true,
+                    inputProps={{
+                      readOnly: !isEditable,
                     }}
                     defaultValue={teacher.firstName}
                   />
                 </TableCell>
                 <TableCell align="left">
-                  <TextField defaultValue={teacher.lastName} />
+                  <TextField
+                    inputProps={{
+                      readOnly: !isEditable,
+                    }}
+                    defaultValue={teacher.lastName}
+                  />
                 </TableCell>
                 <TableCell align="left">
-                  <TextField defaultValue={teacher.surname} />
+                  <TextField
+                    inputProps={{
+                      readOnly: !isEditable,
+                    }}
+                    defaultValue={teacher.surname}
+                  />
                 </TableCell>
                 <TableCell align="left">
-                  <TextField type="number" defaultValue={teacher.totalHours} />
+                  <TextField
+                    inputProps={{
+                      readOnly: !isEditable,
+                    }}
+                    type="number"
+                    defaultValue={teacher.totalHours}
+                  />
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteClick(teacher)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  {isEditable ? (
+                    <Tooltip title="Подтвердить изменения">
+                      <IconButton>
+                        <CheckIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Редактировать данные преподавателя">
+                      <IconButton onClick={() => setIsEditable(!isEditable)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+
+                  <Tooltip title="Удалить преподавателя">
+                    <IconButton onClick={() => handleDeleteClick(teacher)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

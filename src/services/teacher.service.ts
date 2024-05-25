@@ -9,7 +9,7 @@ export const teacherApi = createApi({
   }),
   tagTypes: ['Teachers'],
   endpoints: build => ({
-    getAllTeachers: build.query<ITeacher[], any>({
+    getAllTeachers: build.query<ITeacher[]>({
       query: () => ({
         url: API_ROUTES.getAllTeachers,
         method: 'GET',

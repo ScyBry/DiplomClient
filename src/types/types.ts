@@ -43,13 +43,14 @@ export interface IGetProfile {
 }
 
 export interface ISubject {
-  id: string;
+  id?: string;
   name: string;
   hoursPerGroup: number;
-  createdAt: Date;
-  updatedAt: Date;
-  groupId: string;
-  teachers: ITeacher[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  groupId?: string;
+  teachers?: ITeacher[];
+  Group?: IGroup;
 }
 
 export interface IScheduleSubject {

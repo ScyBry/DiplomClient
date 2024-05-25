@@ -28,7 +28,7 @@ export const subjectApi = createApi({
       }),
       invalidatesTags: ['GroupSubjects'],
     }),
-    editSubject: build.mutation({
+    editSubject: build.mutation<void, { id: string; subject: ISubject }>({
       query: ({ id, subject }) => ({
         url: API_ROUTES.updateSubject,
         method: 'PATCH',
