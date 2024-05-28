@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, ChangeEvent } from 'react';
-import { ISubject, ScheduleSubject } from '../../../types/types';
+import { IScheduleDay, ISubject, ScheduleSubject } from '../../../types/types';
 import {
   FormControl,
   IconButton,
@@ -15,52 +15,46 @@ import { Link } from 'react-router-dom';
 type LessonItemProps = {
   subjects: ISubject[];
   index: number;
-  handleSaveClick: any;
   save: boolean;
   matchingSubject?: ScheduleSubject;
   conflict?: any;
+  registerGetData: (getData: () => IScheduleDay) => void;
 };
 
 export const LessonItem: FC<LessonItemProps> = ({
   subjects,
   save,
   index,
-  handleSaveClick,
   matchingSubject,
   conflict,
+  registerGetData,
 }) => {
   const [selectedSubject, setSelectedSubject] = useState(
     matchingSubject ? matchingSubject.subjectId : '',
   );
 
-  useEffect(() => {
-    console.log('sjdfdsf', conflict);
-  }, [conflict]);
-
-  const handleChange = (event: SelectChangeEvent) => {
-    const value = event.target.value;
-    if (value === '') setTextFieldValue('');
-
-    setSelectedSubject(value);
-  };
-
   const [textFieldValue, setTextFieldValue] = useState(
     matchingSubject ? matchingSubject.roomNumber : '',
   );
 
+  useEffect(() => {
+    registerGetData(() => ({
+      orderNumber: index,
+      subjectId: selectedSubject,
+      roomNumber: textFieldValue,
+    }));
+    console.log(index);
+  }, [selectedSubject, textFieldValue, index]);
+
+  const handleChange = (event: SelectChangeEvent) => {
+    const value = event.target.value;
+    if (value === '') setTextFieldValue('');
+    setSelectedSubject(value);
+  };
+
   const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTextFieldValue(event.target.value);
   };
-
-  useEffect(() => {
-    if (save) {
-      handleSaveClick({
-        orderNumber: index,
-        subjectId: selectedSubject,
-        roomNumber: textFieldValue,
-      });
-    }
-  }, [save]);
 
   return (
     <>
@@ -90,7 +84,7 @@ export const LessonItem: FC<LessonItemProps> = ({
           onChange={handleTextFieldChange}
           className="w-24"
           size="small"
-          defaultValue={matchingSubject ? matchingSubject.roomNumber : ''}
+          value={textFieldValue}
         />
         <IconButton>
           <DragHandleIcon />

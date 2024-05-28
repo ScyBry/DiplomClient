@@ -8,8 +8,8 @@ export const MainLayout: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-    <div className="">
-      <AppBar position="static">
+    <div>
+      <AppBar sx={{ position: 'sticky', top: 0, left: 0 }} position="static">
         <Toolbar variant="dense">
           <Tooltip title="Открыть меню">
             <IconButton edge="start" onClick={() => setIsOpen(true)}>

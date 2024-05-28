@@ -1,5 +1,5 @@
 import { IconButton, Paper, Tooltip } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 import { LessonItem } from '../LessonItem/LessonItem';
 import { IScheduleDay, ISubject, ScheduleSubject } from '../../../types/types';
@@ -9,13 +9,14 @@ import { toast } from 'react-toastify';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 
-let conflict = null;
+let conflict: any = null;
 
 type DayScheduleProps = {
   subjects: ISubject[];
   groupId: string;
   dayOfWeek: string;
   scheduleData?: ScheduleSubject[];
+  aboba: boolean;
 };
 
 export const DaySchedule: FC<DayScheduleProps> = ({
@@ -23,60 +24,46 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   groupId,
   dayOfWeek,
   scheduleData,
+  aboba,
 }) => {
-  const [saveDaySchedule, { isLoading, data: conflicts }] =
+  const [saveDaySchedule, { data: conflicts }] =
     scheduleApi.useSaveDayScheduleMutation();
 
-  const [items, setItems] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-  const [save, setSave] = useState<boolean>(false);
-
+  const [items, setItems] = useState([
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+  ]);
   const [selectedLessonItems, setSelectedLessonItems] = useState<
     IScheduleDay[]
   >([]);
-
-  const handleItemClick = (lessonItemData: IScheduleDay) => {
-    const lessonData = lessonItemData;
-    setSelectedLessonItems(prevState => [...prevState, lessonData]);
-  };
+  const lessonRefs = useRef<Array<() => IScheduleDay>>([]);
 
   const handleSaveClick = () => {
-    setSelectedLessonItems([]);
-    setSave(true);
-    setTimeout(() => setSave(false), 3000);
+    const lessonData = lessonRefs.current.map(getData => getData());
+    setSelectedLessonItems(lessonData);
+    handleSaveData(lessonData);
   };
 
-  const handleSaveData = () => {
+  const handleSaveData = async (lessonData: IScheduleDay[]) => {
     const data = {
       groupId,
       dayOfWeek,
-      daySubjects: selectedLessonItems,
+      daySubjects: lessonData,
     };
 
     saveDaySchedule(data)
       .unwrap()
-      .then(() => toast.success('Расписание успешно сохранено'))
+      .then()
       .catch(error => toast.error(error.data.message));
   };
 
+  useEffect(() => {
+    handleSaveClick();
+  }, [aboba]);
+
+  useEffect(() => {}, [conflicts]);
+
   return (
     <div className="p-2">
-      <Tooltip title="Сохранить изменения">
-        <IconButton size="small" disabled={isLoading} onClick={handleSaveClick}>
-          <SaveIcon />
-        </IconButton>
-      </Tooltip>
-      {selectedLessonItems.length === 12 && save && (
-        <Tooltip title="Отправить изменения">
-          <IconButton
-            size="small"
-            disabled={isLoading}
-            onClick={handleSaveData}
-          >
-            <SendIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-
       <Reorder.Group axis="y" values={items} onReorder={setItems}>
         <div className="flex">
           <div>
@@ -86,32 +73,22 @@ export const DaySchedule: FC<DayScheduleProps> = ({
               );
 
               if (conflicts) {
-                conflict = conflicts.find(dataItem => {
+                conflict = conflicts.find((dataItem: any) => {
                   return dataItem?.orderNumber == index;
                 });
               }
 
-              if (matchingScheduleItem) {
-                return (
-                  <Reorder.Item key={item} value={item}>
-                    <LessonItem
-                      save={save}
-                      index={index}
-                      subjects={subjects}
-                      handleSaveClick={handleItemClick}
-                      matchingSubject={matchingScheduleItem}
-                      conflict={conflict}
-                    />
-                  </Reorder.Item>
-                );
-              }
               return (
                 <Reorder.Item key={item} value={item}>
                   <LessonItem
-                    save={save}
+                    save={true}
                     index={index}
                     subjects={subjects}
-                    handleSaveClick={handleItemClick}
+                    matchingSubject={matchingScheduleItem}
+                    conflict={conflict && conflict}
+                    registerGetData={getData => {
+                      lessonRefs.current[index] = getData;
+                    }}
                   />
                 </Reorder.Item>
               );

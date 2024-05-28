@@ -45,6 +45,7 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleDeleteClick = (subjectId: string) => {
     setSelectedSubject(subjectId);
@@ -55,6 +56,11 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
     deleteSubject(selectedSubject);
     setIsApproveModalOpen(false);
   };
+
+  const filteredSubjects = subjects.filter(subject => {
+    const subjectName = subject.name.toLowerCase();
+    return subjectName.includes(searchQuery.toLowerCase());
+  });
 
   return (
     <>
@@ -72,6 +78,11 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
               <Typography className="p-3" variant="h5">
                 Предметы
               </Typography>
+              <TextField
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Поиск по имени"
+              />
             </div>
             <TableRow>
               <TableCell />
@@ -87,8 +98,8 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {subjects &&
-              subjects.map(subject => (
+            {filteredSubjects &&
+              filteredSubjects.map(subject => (
                 <Row
                   handleDeleteClick={handleDeleteClick}
                   key={subject.name}

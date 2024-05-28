@@ -8,6 +8,7 @@ import { GroupSchedulePage } from '../pages/GroupSchedulePage.tsx';
 import { ErrorPage } from '../pages/ErrorPage.tsx';
 import { MainPage } from '../pages/MainPage.tsx';
 import { GroupSubjectsPage } from '../pages/GroupSubjectsPage.tsx';
+import { ExportExcelPage } from '../pages/ExportExcelPage.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,11 @@ export const router = createBrowserRouter([
             <MainPage />
           </ProtectedRoute>
         ),
+      },
+
+      {
+        path: '/exportSchedule',
+        element: <ExportExcelPage />,
       },
 
       {

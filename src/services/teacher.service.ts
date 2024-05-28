@@ -9,7 +9,7 @@ export const teacherApi = createApi({
   }),
   tagTypes: ['Teachers'],
   endpoints: build => ({
-    getAllTeachers: build.query<ITeacher[]>({
+    getAllTeachers: build.query<ITeacher[], void>({
       query: () => ({
         url: API_ROUTES.getAllTeachers,
         method: 'GET',
@@ -21,6 +21,20 @@ export const teacherApi = createApi({
         url: API_ROUTES.createTeacher,
         method: 'POST',
         body: teacher,
+      }),
+      invalidatesTags: ['Teachers'],
+    }),
+    updateTeacher: build.mutation<
+      void,
+      { id: string; teacher: Partial<ITeacher> }
+    >({
+      query: ({ id, teacher }) => ({
+        url: API_ROUTES.updateTeacher,
+        method: 'PATCH',
+        params: {
+          id,
+        },
+        body: { ...teacher },
       }),
       invalidatesTags: ['Teachers'],
     }),

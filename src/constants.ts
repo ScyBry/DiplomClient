@@ -10,6 +10,7 @@ export const API_ROUTES = {
   getOneGroup: 'group/findOneGroup',
 
   getAllTeachers: 'teacher/getAllTeachers',
+  updateTeacher: 'teacher/updateTeacher',
   createTeacher: 'teacher/createTeacher',
   deleteTeacher: 'teacher/deleteTeacher',
   assignSubjectsToTeacher: 'teacher/assignSubjectsToTeacher',
@@ -29,8 +30,8 @@ export const API_ROUTES = {
 
 export const SUBJECT_TABLE_HEAD_ROWS = ['Дисциплина', 'Кол-во часов'];
 export const TEACHER_TABLE_HEAD_ROWS = [
-  'Имя',
   'Фамилия',
+  'Имя',
   'Отчество',
   'Кол-во часов',
 ];
@@ -40,31 +41,32 @@ export const TASKBAR_NAVIGATION = [
     title: 'Главная',
     route: '/',
   },
+  { title: 'Экспорт', route: '/exportSchedule' },
   {
     title: 'Преподаватели',
     route: '/teachers',
   },
 ];
 
-export const WEAK_DAYS = [
+export const WEEK_DAYS = [
   {
-    label: 'ПН',
-    id: 'simple-tab-0',
+    value: 'ПН',
+    label: 'Понедельник',
   },
   {
-    label: 'ВТ',
-    id: 'simple-tab-1',
+    value: 'ВТ',
+    label: 'Вторник',
   },
   {
-    label: 'СР',
-    id: 'simple-tab-2',
+    value: 'СР',
+    label: 'Среда',
   },
   {
-    label: 'ЧТ',
-    id: 'simple-tab-3',
+    value: 'ЧТ',
+    label: 'Четверг',
   },
   {
-    label: 'ПТ',
-    id: 'simple-tab-4',
+    value: 'ПТ',
+    label: 'Пятница',
   },
 ];

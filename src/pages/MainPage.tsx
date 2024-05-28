@@ -1,6 +1,5 @@
 import { Typography } from '@mui/material';
 import Logo from '../assets/cropped-180-1@2x.png';
-import { ExportToExcel } from '../components/Excel/Excel';
 
 export const MainPage = () => {
   return (
@@ -13,7 +12,6 @@ export const MainPage = () => {
           технологический университет» «Витебский государственный
           технологический колледж»
         </Typography>
-        <ExportToExcel />
       </div>
     </div>
   );
