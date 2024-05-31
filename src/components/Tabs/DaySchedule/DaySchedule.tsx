@@ -1,13 +1,20 @@
-import { IconButton, Paper, Tooltip } from '@mui/material';
+import { Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { FC, useEffect, useState, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 import { LessonItem } from '../LessonItem/LessonItem';
-import { IScheduleDay, ISubject, ScheduleSubject } from '../../../types/types';
+import {
+  ICabinet,
+  IScheduleDay,
+  ISubject,
+  ScheduleSubject,
+} from '../../../types/types';
 import { scheduleApi } from '../../../services/schedule.service';
 
 import { toast } from 'react-toastify';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
+import { LoadingButton } from '@mui/lab';
+import { ApproveModal } from '../../Modals/ApproveModal';
 
 let conflict: any = null;
 
@@ -16,7 +23,8 @@ type DayScheduleProps = {
   groupId: string;
   dayOfWeek: string;
   scheduleData?: ScheduleSubject[];
-  aboba: boolean;
+  save: boolean;
+  cabinets: ICabinet[];
 };
 
 export const DaySchedule: FC<DayScheduleProps> = ({
@@ -24,18 +32,21 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   groupId,
   dayOfWeek,
   scheduleData,
-  aboba,
+  save,
+  cabinets,
 }) => {
   const [saveDaySchedule, { data: conflicts }] =
     scheduleApi.useSaveDayScheduleMutation();
+  const [confirmSchedule] = scheduleApi.useConfirmScheduleMutation();
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
 
   const [items, setItems] = useState([
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
   ]);
   const [selectedLessonItems, setSelectedLessonItems] = useState<
     IScheduleDay[]
   >([]);
-  const lessonRefs = useRef<Array<() => IScheduleDay>>([]);
+  const lessonRefs = useRef<Array<() => any>>([]);
 
   const handleSaveClick = () => {
     const lessonData = lessonRefs.current.map(getData => getData());
@@ -43,59 +54,81 @@ export const DaySchedule: FC<DayScheduleProps> = ({
     handleSaveData(lessonData);
   };
 
-  const handleSaveData = async (lessonData: IScheduleDay[]) => {
+  const handleSaveData = async (lessonData: any[]) => {
     const data = {
-      groupId,
+      groupId: groupId,
       dayOfWeek,
       daySubjects: lessonData,
     };
 
     saveDaySchedule(data)
       .unwrap()
-      .then()
+      .then(response => console.log(response))
       .catch(error => toast.error(error.data.message));
+  };
+
+  const handleConfirmSchedule = () => {
+    if (scheduleData && scheduleData[0])
+      confirmSchedule(scheduleData[0].dayScheduleId)
+        .then(() => {
+          toast.success('Расписание подтверждено');
+          setIsApproveModalOpen(false);
+        })
+        .catch(error => {
+          toast.error(error.data.message);
+          setIsApproveModalOpen(false);
+        });
   };
 
   useEffect(() => {
     handleSaveClick();
-  }, [aboba]);
-
-  useEffect(() => {}, [conflicts]);
+  }, [save]);
 
   return (
-    <div className="p-2">
+    <div className="flex p-2">
+      <div className="flex items-center">
+        <LoadingButton
+          fullWidth
+          sx={{ transform: 'rotate(-90deg)' }}
+          onClick={() => setIsApproveModalOpen(true)}
+        >
+          подтвердить
+        </LoadingButton>
+      </div>
       <Reorder.Group axis="y" values={items} onReorder={setItems}>
-        <div className="flex">
-          <div>
-            {items.map((item, index) => {
-              const matchingScheduleItem = scheduleData?.find(
-                scheduleItem => scheduleItem.orderNumber === item,
-              );
+        {items.map((item, index) => {
+          const matchingScheduleItem = scheduleData?.find(
+            scheduleItem => scheduleItem.orderNumber === item,
+          );
 
-              if (conflicts) {
-                conflict = conflicts.find((dataItem: any) => {
-                  return dataItem?.orderNumber == index;
-                });
-              }
+          if (conflicts) {
+            conflict = conflicts.find((dataItem: any) => {
+              return dataItem?.orderNumber == index;
+            });
+          }
 
-              return (
-                <Reorder.Item key={item} value={item}>
-                  <LessonItem
-                    save={true}
-                    index={index}
-                    subjects={subjects}
-                    matchingSubject={matchingScheduleItem}
-                    conflict={conflict && conflict}
-                    registerGetData={getData => {
-                      lessonRefs.current[index] = getData;
-                    }}
-                  />
-                </Reorder.Item>
-              );
-            })}
-          </div>
-        </div>
+          return (
+            <Reorder.Item key={item} value={item}>
+              <LessonItem
+                index={index}
+                subjects={subjects}
+                matchingSubject={matchingScheduleItem}
+                conflict={conflict && conflict}
+                registerGetData={getData => {
+                  lessonRefs.current[index] = getData;
+                }}
+                cabinets={cabinets}
+              />
+            </Reorder.Item>
+          );
+        })}
       </Reorder.Group>
+      <ApproveModal
+        text="По нажатию на кнопку вам пиздец"
+        handleClose={() => setIsApproveModalOpen(false)}
+        isOpen={isApproveModalOpen}
+        func={handleConfirmSchedule}
+      />
     </div>
   );
 };

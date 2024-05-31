@@ -42,7 +42,10 @@ export const GroupSchedulePage = () => {
     isLoading: isScheduleLoading,
   } = scheduleApi.useGetGroupScheduleQuery(id);
 
-  const [aboba, setAboba] = useState(false);
+  const { data: cabinets, isSuccess: isCabinetsSuccess } =
+    subjectApi.useGetAllCabinetsQuery();
+
+  const [save, setSave] = useState(false);
 
   if (!id) {
     return <div>Идентификатор группы не найден</div>;
@@ -52,17 +55,31 @@ export const GroupSchedulePage = () => {
     return <LoadingCircle />;
   }
 
-  if (isSubjectsSuccess && isScheduleDataSuccess && subjects && scheduleData) {
+  if (
+    isSubjectsSuccess &&
+    isCabinetsSuccess &&
+    isScheduleDataSuccess &&
+    subjects &&
+    scheduleData
+  ) {
     return (
       <div className="px-3 py-2 w-full h-full">
-        <Button onClick={() => setAboba(!aboba)}>aboba</Button>
         {group && (
           <>
             <Helmet>
               <title>{`${group.name} | Расписание`}</title>
             </Helmet>
 
-            <Typography variant="h5">{`Группа: ${group.name}`}</Typography>
+            <div className="flex gap-3 items-center">
+              <Typography variant="h5">{`Группа: ${group.name}`}</Typography>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => setSave(!save)}
+              >
+                Сохранить изменения
+              </Button>
+            </div>
           </>
         )}
 
@@ -87,14 +104,16 @@ export const GroupSchedulePage = () => {
                               groupId={id}
                               subjects={subjects}
                               scheduleData={scheduleForDay.scheduleSubjects}
-                              aboba={aboba}
+                              save={save}
+                              cabinets={cabinets}
                             />
                           ) : (
                             <DaySchedule
+                              cabinets={cabinets}
                               dayOfWeek={tab.value}
                               groupId={id}
                               subjects={subjects}
-                              aboba={aboba}
+                              save={save}
                             />
                           )}
                         </Paper>

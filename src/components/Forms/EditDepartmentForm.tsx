@@ -5,10 +5,18 @@ import {
   subjectSchema,
   SubjectSchemaType,
 } from '../../utils/zod/zod';
-import { TextField, Typography } from '@mui/material';
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { subjectApi } from '../../services/subjects.service';
 
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { IDepartment } from '../../types/types';
@@ -23,6 +31,13 @@ type EditDepartmentFormProps = {
 export const EditDepartmentForm: FC<EditDepartmentFormProps> = ({
   department,
 }) => {
+  const [location, setLocation] = useState(department.location);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setLocation(value);
+  };
+
   const {
     register,
     handleSubmit,
@@ -39,6 +54,7 @@ export const EditDepartmentForm: FC<EditDepartmentFormProps> = ({
     editDepartment({
       id: department.id,
       name: data.name,
+      location: location,
     })
       .unwrap()
       .then(() => toast.success('Название отделения успешно изменено'))
@@ -58,6 +74,23 @@ export const EditDepartmentForm: FC<EditDepartmentFormProps> = ({
         helperText={errors.name?.message}
         defaultValue={department.name}
       />
+
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Выберите корпус</FormLabel>
+        <RadioGroup
+          row
+          aria-label="building"
+          onChange={handleChange}
+          value={location}
+        >
+          <FormControlLabel
+            value="ГЛВ"
+            control={<Radio />}
+            label="Главный корпус"
+          />
+          <FormControlLabel value="УПК" control={<Radio />} label="Учебный" />
+        </RadioGroup>
+      </FormControl>
 
       <LoadingButton
         loading={isLoading}

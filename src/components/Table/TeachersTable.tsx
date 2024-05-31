@@ -1,6 +1,7 @@
 import {
   Alert,
   IconButton,
+  InputAdornment,
   Paper,
   Table,
   TableBody,
@@ -22,6 +23,7 @@ import { ApproveModal } from '../Modals/ApproveModal';
 import { teacherApi } from '../../services/teacher.service';
 import { toast } from 'react-toastify';
 import CheckIcon from '@mui/icons-material/Check';
+import SearchIcon from '@mui/icons-material/Search';
 
 type TeachersTableProps = {
   teachers: ITeacher[];
@@ -81,14 +83,21 @@ export const TeachersTable: FC<TeachersTableProps> = ({
       >
         <Table stickyHeader aria-label="simple table">
           <TableHead>
-            <div className="p-3">
+            <div className="p-3 flex gap-3">
               <Typography className="p-3" variant="h5">
                 Преподаватели
               </Typography>
               <TextField
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Поиск по имени"
+                placeholder="Поиск..."
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </div>
             <TableRow>

@@ -24,7 +24,7 @@ export const ApproveModal: FC<ApproveModalProps> = ({
         <Typography>{text}</Typography>
         <div className="flex gap-2">
           <Button variant={'contained'} onClick={func}>
-            Удалить
+            подтвердить
           </Button>
           <Button variant={'outlined'} onClick={() => handleClose()}>
             Отмена

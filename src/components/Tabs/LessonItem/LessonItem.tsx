@@ -1,13 +1,20 @@
 import { FC, useEffect, useState, ChangeEvent } from 'react';
-import { IScheduleDay, ISubject, ScheduleSubject } from '../../../types/types';
 import {
+  ICabinet,
+  IScheduleDay,
+  ISubject,
+  ScheduleSubject,
+} from '../../../types/types';
+import {
+  Autocomplete,
+  Checkbox,
   FormControl,
-  IconButton,
   MenuItem,
   Select,
   SelectChangeEvent,
   TextField,
   Typography,
+  IconButton,
 } from '@mui/material';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { Link } from 'react-router-dom';
@@ -15,46 +22,62 @@ import { Link } from 'react-router-dom';
 type LessonItemProps = {
   subjects: ISubject[];
   index: number;
-  save: boolean;
   matchingSubject?: ScheduleSubject;
   conflict?: any;
+  cabinets: ICabinet[];
   registerGetData: (getData: () => IScheduleDay) => void;
 };
 
 export const LessonItem: FC<LessonItemProps> = ({
   subjects,
-  save,
   index,
   matchingSubject,
   conflict,
+  cabinets,
   registerGetData,
 }) => {
   const [selectedSubject, setSelectedSubject] = useState(
     matchingSubject ? matchingSubject.subjectId : '',
   );
 
-  const [textFieldValue, setTextFieldValue] = useState(
-    matchingSubject ? matchingSubject.roomNumber : '',
-  );
+  const [selectedRooms, setSelectedRooms] = useState<ICabinet[]>(() => {
+    if (matchingSubject) {
+      return matchingSubject.ScheduleSubjectCabinet.map(cabinet =>
+        cabinets.find(c => c.id === cabinet.cabinetId),
+      );
+    }
+    return [];
+  });
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     registerGetData(() => ({
       orderNumber: index,
       subjectId: selectedSubject,
-      roomNumber: textFieldValue,
+      cabinets: selectedRooms.map(cabinet => cabinet.id),
     }));
-    console.log(index);
-  }, [selectedSubject, textFieldValue, index]);
+  }, [selectedSubject, selectedRooms]);
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleSubjectChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
-    if (value === '') setTextFieldValue('');
     setSelectedSubject(value);
   };
 
-  const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTextFieldValue(event.target.value);
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
   };
+
+  const handleRoomsChange = (event: any, newValue: ICabinet[]) => {
+    setSelectedRooms(newValue);
+  };
+
+  const filteredCabinets = cabinets.filter(cabinet =>
+    cabinet.roomNumber.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  useEffect(() => {
+    setSearchQuery('');
+  }, [index]);
 
   return (
     <>
@@ -66,10 +89,10 @@ export const LessonItem: FC<LessonItemProps> = ({
         <Select
           error={conflict}
           fullWidth
-          size="small"
           value={selectedSubject}
-          onChange={handleChange}
+          onChange={handleSubjectChange}
           className="min-w-[300px]"
+          size="small"
         >
           <MenuItem value="">Ничего</MenuItem>
           {subjects.map(subject => (
@@ -79,13 +102,32 @@ export const LessonItem: FC<LessonItemProps> = ({
           ))}
         </Select>
 
-        <TextField
-          error={conflict}
-          onChange={handleTextFieldChange}
-          className="w-24"
-          size="small"
-          value={textFieldValue}
-        />
+        <FormControl sx={{ m: 1, width: 600 }}>
+          <Autocomplete
+            multiple
+            size="small"
+            value={selectedRooms}
+            onChange={handleRoomsChange}
+            options={filteredCabinets}
+            getOptionLabel={option => option.roomNumber}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label="Кабинеты"
+                placeholder="Поиск кабинета"
+                onChange={handleSearchChange}
+                value={searchQuery}
+              />
+            )}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox checked={selected} />
+                {option.roomNumber}
+              </li>
+            )}
+          />
+        </FormControl>
+
         <IconButton>
           <DragHandleIcon />
         </IconButton>

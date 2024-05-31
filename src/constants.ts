@@ -19,6 +19,7 @@ export const API_ROUTES = {
   createSubject: 'subject/createSubject',
   updateSubject: 'subject/updateSubject',
   deleteSubject: 'subject/deleteSubject',
+  getAllCabinets: 'cabinets/getAllCabinets',
 
   registerUser: 'auth/signup',
   loginUser: 'auth/signin',
@@ -26,6 +27,8 @@ export const API_ROUTES = {
 
   getGroupSchedule: 'schedule/getGroupSchedule',
   saveDaySchedule: 'schedule/saveDaySchedule',
+  findAvailableCabinets: 'cabinets/findAvailableCabinets',
+  confirmSchedule: 'schedule/confirmSchedule',
 };
 
 export const SUBJECT_TABLE_HEAD_ROWS = ['Дисциплина', 'Кол-во часов'];
@@ -45,6 +48,10 @@ export const TASKBAR_NAVIGATION = [
   {
     title: 'Преподаватели',
     route: '/teachers',
+  },
+  {
+    title: 'Кабинеты',
+    route: '/cabinet',
   },
 ];
 

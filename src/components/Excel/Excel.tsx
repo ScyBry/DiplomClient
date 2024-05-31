@@ -3,9 +3,13 @@ import axios from 'axios';
 import {
   Button,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   InputLabel,
   MenuItem,
   Paper,
+  Radio,
+  RadioGroup,
   Select,
   SelectChangeEvent,
   Typography,
@@ -22,6 +26,7 @@ export const ExportToExcel = () => {
         responseType: 'arraybuffer',
         params: {
           day,
+          location: location,
         },
       },
     );
@@ -42,12 +47,19 @@ export const ExportToExcel = () => {
     setDay(value);
   };
 
+  const [location, setLocation] = useState('ГЛВ');
+
+  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setLocation(value);
+  };
+
   return (
     <Paper className="flex flex-col  gap-8 p-6">
       <Typography variant="h4">
         Выберите на какой день хотите <br /> получить расписание
       </Typography>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col  gap-4">
         <FormControl>
           <InputLabel id="demo-simple-select-label">Выберите день</InputLabel>
           <Select
@@ -63,6 +75,23 @@ export const ExportToExcel = () => {
             ))}
           </Select>
         </FormControl>
+        <FormControl component="fieldset">
+          <FormLabel component="legend">Выберите корпус</FormLabel>
+          <RadioGroup
+            row
+            aria-label="building"
+            onChange={handleLocationChange}
+            value={location}
+          >
+            <FormControlLabel
+              value="ГЛВ"
+              control={<Radio />}
+              label="Главный корпус"
+            />
+            <FormControlLabel value="УПК" control={<Radio />} label="Учебный" />
+          </RadioGroup>
+        </FormControl>
+
         <Button variant="contained" color="primary" onClick={handleExport}>
           Экспортировать в таблицу
         </Button>

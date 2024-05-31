@@ -27,8 +27,11 @@ export const departmentApi = createApi({
       invalidatesTags: ['Department'],
     }),
 
-    editDepartment: build.mutation<void, { id: string; name: string }>({
-      query: ({ id, name }) => ({
+    editDepartment: build.mutation<
+      void,
+      { id: string; name: string; location: string }
+    >({
+      query: ({ id, name, location }) => ({
         url: API_ROUTES.updateDepartment,
         method: 'PATCH',
         params: {
@@ -36,6 +39,7 @@ export const departmentApi = createApi({
         },
         body: {
           name,
+          location,
         },
       }),
       invalidatesTags: ['Department'],
@@ -101,7 +105,7 @@ export const departmentApi = createApi({
       providesTags: result => ['Group'],
     }),
 
-    getAllTeachers: build.query<ITeacher[]>({
+    getAllTeachers: build.query<ITeacher, void[]>({
       query: () => ({
         url: API_ROUTES.getAllTeachers,
       }),

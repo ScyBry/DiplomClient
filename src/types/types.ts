@@ -8,6 +8,7 @@ export interface IGroup {
 export interface IDepartment {
   id: string;
   name: string;
+  location: string;
   groups: IGroup[];
 }
 
@@ -75,8 +76,20 @@ export interface IScheduleData {
 
 export interface ScheduleSubject {
   id: string;
-  roomNumber: string;
+  ScheduleSubjectCabinet: IScheduleSubjectCabinet[];
   orderNumber: number;
   subjectId: string;
   dayScheduleId: string;
+}
+
+export interface IScheduleSubjectCabinet {
+  cabinetId: string;
+  subjectId: string;
+  cabinet: ICabinet;
+}
+
+export interface ICabinet {
+  id: string;
+  roomNumber: string;
+  location: 'УПК' | 'ГЛВ';
 }

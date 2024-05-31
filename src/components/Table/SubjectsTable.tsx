@@ -8,6 +8,7 @@ import {
   Box,
   Collapse,
   IconButton,
+  InputAdornment,
   Paper,
   Table,
   TableBody,
@@ -28,6 +29,7 @@ import { ApproveModal } from '../Modals/ApproveModal';
 import CheckIcon from '@mui/icons-material/Check';
 import { toast } from 'react-toastify';
 import { TransferList } from '../TransferList';
+import SearchIcon from '@mui/icons-material/Search';
 
 type RowProps = {
   row: ISubject;
@@ -74,14 +76,21 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
       >
         <Table stickyHeader aria-label="collapsible table">
           <TableHead>
-            <div className="flex justify-between">
+            <div className="flex gap-2">
               <Typography className="p-3" variant="h5">
                 Предметы
               </Typography>
               <TextField
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Поиск по имени"
+                placeholder="Поиск..."
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </div>
             <TableRow>

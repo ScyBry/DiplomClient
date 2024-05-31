@@ -58,7 +58,7 @@ export const Taskbar = () => {
   }
 
   return (
-    <List sx={{ width: '100%', maxWidth: '360px' }}>
+    <List sx={{ width: '100%', maxWidth: '600px' }}>
       <NavigationTaskbarSection sectionTitle="Навигация" />
       {departments && (
         <DepartmentTaskbarSection

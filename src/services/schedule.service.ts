@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase';
 import { API_ROUTES } from '../constants';
 import { IScheduleData } from '../types/types';
+import { teacherApi } from './teacher.service';
+import { subjectApi } from './subjects.service';
 
 export const scheduleApi = createApi({
   reducerPath: 'scheduleApi',
@@ -9,7 +11,7 @@ export const scheduleApi = createApi({
     baseUrl: 'http://localhost:7777/api',
     headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
   }),
-  tagTypes: ['GroupSchedule'],
+  tagTypes: ['GroupSchedule', 'Cabinets'],
   endpoints: build => ({
     getGroupSchedule: build.query<IScheduleData[], string>({
       query: groupId => ({
@@ -28,6 +30,34 @@ export const scheduleApi = createApi({
         body,
       }),
       invalidatesTags: ['GroupSchedule'],
+    }),
+
+    confirmSchedule: build.mutation({
+      query: id => ({
+        url: API_ROUTES.confirmSchedule,
+        method: 'POST',
+        params: {
+          id,
+        },
+      }),
+      invalidatesTags: ['GroupSchedule'],
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(teacherApi.util.invalidateTags(['Teachers']));
+        dispatch(subjectApi.util.invalidateTags(['GroupSubjects']));
+      },
+    }),
+
+    findAvailableCabinets: build.mutation({
+      query: ({ day, orderNumber, location }) => ({
+        url: API_ROUTES.findAvailableCabinets,
+        method: 'GET',
+        params: {
+          day,
+          location,
+          orderNumber,
+        },
+      }),
     }),
   }),
 });

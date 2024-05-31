@@ -7,9 +7,10 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import { Typography } from '@mui/material';
+import { Typography, TextField, InputAdornment } from '@mui/material';
 import { ITeacher } from '../types/types';
 import { LoadingButton } from '@mui/lab';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface ITeacherListProps {
   teachers: ITeacher[];
@@ -37,6 +38,7 @@ export const TransferList: React.FC<ITeacherListProps> = ({
   isLoading,
 }) => {
   const [checked, setChecked] = React.useState<readonly string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [left, setLeft] = React.useState<readonly string[]>(() => {
     const filteredTeachers = teachers?.filter(
       teacher =>
@@ -88,6 +90,20 @@ export const TransferList: React.FC<ITeacherListProps> = ({
     setRight([]);
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredLeft = left.filter(id => {
+    const teacher = teachers.find(teacher => teacher.id === id);
+    return teacher?.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  const filteredRight = right.filter(id => {
+    const teacher = teachers.find(teacher => teacher.id === id);
+    return teacher?.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   const customList = (items: readonly string[]) => (
     <Paper sx={{ width: 500, height: 300, overflow: 'auto' }}>
       <List dense component="div" role="list">
@@ -132,7 +148,21 @@ export const TransferList: React.FC<ITeacherListProps> = ({
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       <Grid item>
         <Typography variant="h6">{leftTitle}</Typography>
-        {customList(left)}
+        <TextField
+          fullWidth
+          placeholder="Поиск..."
+          variant="outlined"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        {customList(filteredLeft)}
       </Grid>
       <Grid item>
         <Grid container direction="column" alignItems="center">
@@ -190,7 +220,7 @@ export const TransferList: React.FC<ITeacherListProps> = ({
       </Grid>
       <Grid item>
         <Typography variant="h6">{rightTitle}</Typography>
-        {customList(right)}
+        {customList(filteredRight)}
       </Grid>
     </Grid>
   );

@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase';
 import { API_ROUTES } from '../constants';
-import { ISubject } from '../types/types';
+import { ICabinet, ISubject } from '../types/types';
+import { url } from 'inspector';
+import { METHODS } from 'http';
 
 export const subjectApi = createApi({
   reducerPath: 'subjectApi',
@@ -48,6 +50,11 @@ export const subjectApi = createApi({
         },
       }),
       invalidatesTags: ['GroupSubjects'],
+    }),
+    getAllCabinets: build.query<ICabinet[], void>({
+      query: () => ({
+        url: API_ROUTES.getAllCabinets,
+      }),
     }),
   }),
 });
