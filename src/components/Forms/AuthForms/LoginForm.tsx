@@ -67,20 +67,13 @@ export const LoginForm = () => {
           <TextField
             fullWidth
             label="Пароль"
+            type="password"
             variant="outlined"
             {...register('password')}
             error={!!errors.password}
             helperText={errors.password?.message}
           />
 
-          <div className="flex gap-3 items-center">
-            <Typography variant="subtitle1">Еще нет аккаунта?</Typography>
-            <Link className="color" to="/register">
-              <Typography variant="subtitle1" color="blue">
-                Зарегистрироваться
-              </Typography>
-            </Link>
-          </div>
           <LoadingButton
             loading={isLoading}
             loadingPosition="start"

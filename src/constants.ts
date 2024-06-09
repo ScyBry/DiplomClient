@@ -24,12 +24,18 @@ export const API_ROUTES = {
   registerUser: 'auth/signup',
   loginUser: 'auth/signin',
   getProfile: 'auth/getProfile',
+  getAllUsers: 'user/findAll',
+  updateUser: 'user/updateUser',
+  deleteUser: 'user/deleteUser',
 
   getGroupSchedule: 'schedule/getGroupSchedule',
   saveDaySchedule: 'schedule/saveDaySchedule',
   findAvailableCabinets: 'cabinets/findAvailableCabinets',
   confirmSchedule: 'schedule/confirmSchedule',
 };
+
+export const BASE_URL =
+  process.env.REACT_APP_API_BASE_URL || 'http://localhost:7777/api';
 
 export const SUBJECT_TABLE_HEAD_ROWS = ['Дисциплина', 'Кол-во часов'];
 export const TEACHER_TABLE_HEAD_ROWS = [
@@ -38,6 +44,8 @@ export const TEACHER_TABLE_HEAD_ROWS = [
   'Отчество',
   'Кол-во часов',
 ];
+
+export const USERS_TABLE_HEAD_ROWS = ['E-mail', 'Имя пользователя'];
 
 export const TASKBAR_NAVIGATION = [
   {

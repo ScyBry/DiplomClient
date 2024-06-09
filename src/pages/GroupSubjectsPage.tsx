@@ -3,6 +3,8 @@ import { SubjectsTable } from '../components/Table/SubjectsTable';
 import { subjectApi } from '../services/subjects.service';
 import { LoadingCircle } from '../components/Loading';
 import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
+import { departmentApi } from '../services/department.service';
 
 export const GroupSubjectsPage = () => {
   const { id } = useParams();
@@ -11,21 +13,21 @@ export const GroupSubjectsPage = () => {
     return <div>Что-то пошло не так...</div>;
   }
 
-  const { data: subjects, isLoading } =
-    subjectApi.useGetAllGroupSubjectsQuery(id);
+  const { data: subjects, isLoading: isSubjectsLoading } =
+    subjectApi.useGetAllGroupSubjectsQuery({ id, includeZeroHours: true });
 
-  if (isLoading) {
+  const { data: group, isLoading: isLoadingGroup } =
+    departmentApi.useGetOneGroupQuery({ groupId: id, withSubjects: true });
+
+  if (isLoadingGroup || isSubjectsLoading) {
     return <LoadingCircle />;
   }
 
   return (
     <div className="px-3 py-2">
-      {id && subjects && (
+      {id && group && subjects && (
         <div>
-          <Helmet>
-            <title>{`${subjects[0].Group?.name} предметы | Расписание`}</title>
-          </Helmet>
-          <SubjectsTable subjects={subjects} id={id} />{' '}
+          <SubjectsTable groupName={group.name} subjects={subjects} id={id} />
         </div>
       )}
     </div>

@@ -10,6 +10,8 @@ import { MainPage } from '../pages/MainPage.tsx';
 import { GroupSubjectsPage } from '../pages/GroupSubjectsPage.tsx';
 import { ExportExcelPage } from '../pages/ExportExcelPage.tsx';
 import { CabinetPage } from '../pages/CabinetPage.tsx';
+import { UsersTable } from '../components/Table/UsersTable.tsx';
+import { UsersPage } from '../pages/UsersPage.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +38,8 @@ export const router = createBrowserRouter([
         path: '/cabinet',
         element: <CabinetPage />,
       },
+
+      { path: '/users', element: <UsersPage /> },
 
       {
         path: '/exportSchedule',

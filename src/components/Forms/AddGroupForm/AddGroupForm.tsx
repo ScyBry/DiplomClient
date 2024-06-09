@@ -28,19 +28,11 @@ export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
   });
 
   const onSubmit: SubmitHandler<GroupSchemaType> = data => {
-    createGroup(data);
+    createGroup(data)
+      .then(() => toast.success('Группа успешно добавлена'))
+      .catch(error => toast.error(error.data.message));
     reset();
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Группа успешно добавлена');
-    }
-
-    if (isError) {
-      toast.error(error.data.message);
-    }
-  }, [isError, isSuccess, error]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>

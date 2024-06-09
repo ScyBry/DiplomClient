@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase';
-import { API_ROUTES } from '../constants';
+import { API_ROUTES, BASE_URL } from '../constants';
 import { ICabinet, ISubject } from '../types/types';
 import { url } from 'inspector';
 import { METHODS } from 'http';
@@ -8,16 +8,20 @@ import { METHODS } from 'http';
 export const subjectApi = createApi({
   reducerPath: 'subjectApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:7777/api',
+    baseUrl: BASE_URL,
     headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
   }),
   tagTypes: ['GroupSubjects'],
   endpoints: build => ({
-    getAllGroupSubjects: build.query<ISubject[], string>({
-      query: (id: string) => ({
+    getAllGroupSubjects: build.query<
+      ISubject[],
+      { id: string; includeZeroHours: boolean }
+    >({
+      query: ({ id, includeZeroHours }) => ({
         url: API_ROUTES.getAllGroupSubjects,
         params: {
           id,
+          includeZeroHours,
         },
       }),
       providesTags: result => ['GroupSubjects'],

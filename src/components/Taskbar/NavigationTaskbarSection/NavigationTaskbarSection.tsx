@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import {
   Divider,
   ListItemButton,
@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { TASKBAR_NAVIGATION } from '../../../constants.ts';
 import { Link } from 'react-router-dom';
+import { userApi } from '../../../services/user.service.ts';
 
 type NavigationTaskbarSectionProps = {
   sectionTitle: string;
@@ -15,21 +16,35 @@ type NavigationTaskbarSectionProps = {
 export const NavigationTaskbarSection: FC<NavigationTaskbarSectionProps> = ({
   sectionTitle,
 }) => {
+  const { data: user, isSuccess } = userApi.useGetProfileQuery();
+
   return (
     <>
-      <ListSubheader component="div" id="nested-list-subheader">
-        {sectionTitle}
-      </ListSubheader>
-      <div>
-        {TASKBAR_NAVIGATION.map(nav => (
-          <Link to={nav.route}>
-            <ListItemButton>
-              <ListItemText primary={nav.title} />
-            </ListItemButton>
-          </Link>
-        ))}
-      </div>
-      <Divider />
+      {isSuccess && (
+        <>
+          <ListSubheader component="div" id="nested-list-subheader">
+            {sectionTitle}
+          </ListSubheader>
+          <div>
+            {user.isAdmin && (
+              <Link to={'/users'}>
+                <ListItemButton>
+                  <ListItemText primary={'Пользователи'} />
+                </ListItemButton>
+              </Link>
+            )}
+
+            {TASKBAR_NAVIGATION.map(nav => (
+              <Link key={nav.route} to={nav.route}>
+                <ListItemButton>
+                  <ListItemText primary={nav.title} />
+                </ListItemButton>
+              </Link>
+            ))}
+          </div>
+          <Divider />
+        </>
+      )}
     </>
   );
 };

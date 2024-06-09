@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect } from 'react';
+import { FC, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from '../services/user.service.ts';
 import { LoadingCircle } from '../components/Loading.tsx';
@@ -13,7 +13,7 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
 
   if (isLoading) return <LoadingCircle />;
 
-  if (!data || isError) navigate('/register');
+  if (!data || isError) navigate('/login');
 
   return <>{children}</>;
 };

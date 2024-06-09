@@ -41,6 +41,7 @@ export interface IGetProfile {
   id: string;
   email: string;
   username: string;
+  isAdmin: boolean;
 }
 
 export interface ISubject {
@@ -70,6 +71,7 @@ export interface IScheduleData {
   id: string;
   dayOfWeek: string;
   groupId: string;
+  lastConfirm: Date;
   Group: IGroup;
   scheduleSubjects: ScheduleSubject[];
 }
@@ -92,4 +94,14 @@ export interface ICabinet {
   id: string;
   roomNumber: string;
   location: 'УПК' | 'ГЛВ';
+}
+
+export interface IUser {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

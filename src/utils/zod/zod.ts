@@ -70,7 +70,7 @@ export const addTeacherSchema = z.object({
     .string()
     .min(1, { message: 'Отчество не может быть пустым' })
     .max(100, { message: 'Отчество не должна превышать 100 символов' }),
-  totalHours: z.string(),
+  totalHours: z.string().min(1, { message: 'Кол-во не может быть пустым' }),
 });
 export type AddTeacherSchemaType = z.infer<typeof addTeacherSchema>;
 

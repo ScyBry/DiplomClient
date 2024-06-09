@@ -14,22 +14,19 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
-import { WEEK_DAYS } from '../../constants';
+import { BASE_URL, WEEK_DAYS } from '../../constants';
 
 export const ExportToExcel = () => {
   const [day, setDay] = useState<string>(WEEK_DAYS[0].value);
 
   const handleExport = async () => {
-    const response = await axios.get(
-      'http://localhost:7777/api/schedule/exportExcel',
-      {
-        responseType: 'arraybuffer',
-        params: {
-          day,
-          location: location,
-        },
+    const response = await axios.get(`${BASE_URL}/schedule/exportExcel`, {
+      responseType: 'arraybuffer',
+      params: {
+        day,
+        location: location,
       },
-    );
+    });
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });

@@ -25,6 +25,7 @@ type LessonItemProps = {
   matchingSubject?: ScheduleSubject;
   conflict?: any;
   cabinets: ICabinet[];
+  item: any;
   registerGetData: (getData: () => IScheduleDay) => void;
 };
 
@@ -34,6 +35,7 @@ export const LessonItem: FC<LessonItemProps> = ({
   matchingSubject,
   conflict,
   cabinets,
+  item,
   registerGetData,
 }) => {
   const [selectedSubject, setSelectedSubject] = useState(
@@ -56,7 +58,7 @@ export const LessonItem: FC<LessonItemProps> = ({
       subjectId: selectedSubject,
       cabinets: selectedRooms.map(cabinet => cabinet.id),
     }));
-  }, [selectedSubject, selectedRooms]);
+  }, [selectedSubject, selectedRooms, index]);
 
   const handleSubjectChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
@@ -91,7 +93,7 @@ export const LessonItem: FC<LessonItemProps> = ({
           fullWidth
           value={selectedSubject}
           onChange={handleSubjectChange}
-          className="min-w-[300px]"
+          className="min-w-[170px]"
           size="small"
         >
           <MenuItem value="">Ничего</MenuItem>

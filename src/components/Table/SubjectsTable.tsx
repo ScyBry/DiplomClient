@@ -30,6 +30,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import { toast } from 'react-toastify';
 import { TransferList } from '../TransferList';
 import SearchIcon from '@mui/icons-material/Search';
+import { departmentApi } from '../../services/department.service';
+import { SUBJECT_TABLE_HEAD_ROWS } from '../../constants';
 
 type RowProps = {
   row: ISubject;
@@ -37,11 +39,16 @@ type RowProps = {
 };
 
 type SubjectTableProps = {
+  groupName: string;
   id: string;
   subjects: ISubject[];
 };
 
-export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
+export const SubjectsTable: FC<SubjectTableProps> = ({
+  id,
+  subjects,
+  groupName,
+}) => {
   const [deleteSubject] = subjectApi.useDeleteSubjectMutation();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -78,7 +85,7 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
           <TableHead>
             <div className="flex gap-2">
               <Typography className="p-3" variant="h5">
-                Предметы
+                {`Предметы: ${groupName}`}
               </Typography>
               <TextField
                 value={searchQuery}
@@ -92,6 +99,7 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
                   ),
                 }}
               />
+              ``
             </div>
             <TableRow>
               <TableCell />
@@ -106,7 +114,7 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          {/* <TableBody>
             {filteredSubjects &&
               filteredSubjects.map(subject => (
                 <Row
@@ -115,7 +123,30 @@ export const SubjectsTable: FC<SubjectTableProps> = ({ id, subjects }) => {
                   row={subject}
                 />
               ))}
-          </TableBody>
+          </TableBody> */}
+
+          {filteredSubjects.length === 0 ? (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={SUBJECT_TABLE_HEAD_ROWS.length + 1}>
+                  <Typography variant="h4" align="center">
+                    Ничего не найдено
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {filteredSubjects &&
+                filteredSubjects.map(subject => (
+                  <Row
+                    handleDeleteClick={handleDeleteClick}
+                    key={subject.name}
+                    row={subject}
+                  />
+                ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
 
@@ -175,8 +206,12 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
         .unwrap()
         .then(() => {
           toast.success('Информация предмета успешно изменена');
+          setIsEditable(false);
         })
-        .catch(error => toast.error(error.data.message));
+        .catch(error => {
+          console.log(error);
+          toast.error(error.data.message[0]);
+        });
     }
   };
 

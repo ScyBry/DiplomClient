@@ -1,4 +1,3 @@
-import { Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { FC, useEffect, useState, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 import { LessonItem } from '../LessonItem/LessonItem';
@@ -11,14 +10,15 @@ import {
 import { scheduleApi } from '../../../services/schedule.service';
 
 import { toast } from 'react-toastify';
-import SaveIcon from '@mui/icons-material/Save';
-import SendIcon from '@mui/icons-material/Send';
 import { LoadingButton } from '@mui/lab';
 import { ApproveModal } from '../../Modals/ApproveModal';
+import { IconButton, Tooltip } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 
 let conflict: any = null;
 
 type DayScheduleProps = {
+  lastConfirm: string;
   subjects: ISubject[];
   groupId: string;
   dayOfWeek: string;
@@ -34,6 +34,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   scheduleData,
   save,
   cabinets,
+  lastConfirm,
 }) => {
   const [saveDaySchedule, { data: conflicts }] =
     scheduleApi.useSaveDayScheduleMutation();
@@ -63,7 +64,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
 
     saveDaySchedule(data)
       .unwrap()
-      .then(response => console.log(response))
+      .then()
       .catch(error => toast.error(error.data.message));
   };
 
@@ -85,16 +86,12 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   }, [save]);
 
   return (
-    <div className="flex p-2">
-      <div className="flex items-center">
-        <LoadingButton
-          fullWidth
-          sx={{ transform: 'rotate(-90deg)' }}
-          onClick={() => setIsApproveModalOpen(true)}
-        >
-          подтвердить
-        </LoadingButton>
-      </div>
+    <div className="">
+      <Tooltip title="Подтвердить расписание">
+        <IconButton onClick={() => setIsApproveModalOpen(true)}>
+          <CheckIcon />
+        </IconButton>
+      </Tooltip>
       <Reorder.Group axis="y" values={items} onReorder={setItems}>
         {items.map((item, index) => {
           const matchingScheduleItem = scheduleData?.find(
@@ -111,6 +108,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
             <Reorder.Item key={item} value={item}>
               <LessonItem
                 index={index}
+                item={item}
                 subjects={subjects}
                 matchingSubject={matchingScheduleItem}
                 conflict={conflict && conflict}
@@ -124,7 +122,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
         })}
       </Reorder.Group>
       <ApproveModal
-        text="По нажатию на кнопку вам пиздец"
+        text={`По нажатию на кнопку все предметы за день будут вычтены из кол-ва часов предмета и преподавателей, что их ведут. Последнее подтверждение: ${new Date(lastConfirm).toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
         handleClose={() => setIsApproveModalOpen(false)}
         isOpen={isApproveModalOpen}
         func={handleConfirmSchedule}

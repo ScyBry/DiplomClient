@@ -1,25 +1,36 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_ROUTES } from '../constants.ts';
+import { API_ROUTES, BASE_URL } from '../constants.ts';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase.ts';
-import { IGetProfile, ILoginUser, IRegisterUser } from '../types/types.ts';
+import {
+  IGetProfile,
+  ILoginUser,
+  IRegisterUser,
+  IUser,
+} from '../types/types.ts';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:7777/api',
+    baseUrl: BASE_URL,
   }),
-  tagTypes: ['User', 'IsAuth'],
+  tagTypes: ['User', 'IsAuth', 'Users'],
   endpoints: build => ({
-    registerUser: build.mutation<IRegisterUser>({
+    findAll: build.query<IUser[], void>({
+      query: () => ({
+        url: API_ROUTES.getAllUsers,
+      }),
+      providesTags: result => ['Users'],
+    }),
+
+    registerUser: build.mutation<IRegisterUser, void>({
       query: user => ({
         url: API_ROUTES.registerUser,
         method: 'POST',
         body: user,
       }),
-      providesTags: result => ['User'],
-      invalidatesTags: ['User'],
+      invalidatesTags: ['Users'],
     }),
-    loginUser: build.mutation<ILoginUser>({
+    loginUser: build.mutation<void, ILoginUser>({
       query: user => ({
         url: API_ROUTES.loginUser,
         method: 'POST',
@@ -28,7 +39,7 @@ export const userApi = createApi({
       providesTags: result => ['User'],
       invalidatesTags: ['User', 'IsAuth'],
     }),
-    getProfile: build.query<IGetProfile, IGetProfile>({
+    getProfile: build.query<IGetProfile, void>({
       query: () => ({
         url: API_ROUTES.getProfile,
         method: 'GET',
@@ -37,6 +48,27 @@ export const userApi = createApi({
         },
       }),
       providesTags: result => ['IsAuth'],
+    }),
+
+    updateUser: build.mutation({
+      query: ({ id, user }) => ({
+        url: API_ROUTES.updateUser,
+        method: 'PATCH',
+        params: {
+          id,
+        },
+        body: { ...user },
+      }),
+      invalidatesTags: ['Users'],
+    }),
+
+    deleteUser: build.mutation({
+      query: id => ({
+        url: API_ROUTES.deleteUser,
+        method: 'DELETE',
+        params: { id },
+      }),
+      invalidatesTags: ['Users'],
     }),
   }),
 });

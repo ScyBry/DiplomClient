@@ -63,7 +63,7 @@ export const TeachersTable: FC<TeachersTableProps> = ({
     updateTeacher({ id: teacher.id, teacher: { ...data } })
       .unwrap()
       .then(() => toast.success('Данные преподавателя успешно обновлены'))
-      .catch(error => toast.error(error.data.message));
+      .catch(error => toast.error(error.data.message[0]));
   };
 
   const filteredTeachers = teachers.filter(teacher => {
@@ -117,9 +117,15 @@ export const TeachersTable: FC<TeachersTableProps> = ({
           </TableHead>
 
           {filteredTeachers.length === 0 ? (
-            <div className="flex items-center justify-center w-full h-full">
-              <Typography variant="h4">Ничего не найдено</Typography>
-            </div>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={TEACHER_TABLE_HEAD_ROWS.length + 1}>
+                  <Typography variant="h4" align="center">
+                    Ничего не найдено
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
           ) : (
             filteredTeachers.map(teacher => (
               <TableBody>

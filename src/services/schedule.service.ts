@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase';
-import { API_ROUTES } from '../constants';
+import { API_ROUTES, BASE_URL } from '../constants';
 import { IScheduleData } from '../types/types';
 import { teacherApi } from './teacher.service';
 import { subjectApi } from './subjects.service';
@@ -8,7 +8,7 @@ import { subjectApi } from './subjects.service';
 export const scheduleApi = createApi({
   reducerPath: 'scheduleApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:7777/api',
+    baseUrl: BASE_URL,
     headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
   }),
   tagTypes: ['GroupSchedule', 'Cabinets'],

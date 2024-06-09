@@ -1,23 +1,15 @@
-import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Drawer, IconButton, Toolbar, Tooltip } from '@mui/material';
+import { Drawer } from '@mui/material';
 import { FC, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Taskbar } from '../components/Taskbar/Taskbar.tsx';
+import { Header } from '../components/AppBar.tsx';
 
 export const MainLayout: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <div>
-      <AppBar sx={{ position: 'sticky', top: 0, left: 0 }} position="static">
-        <Toolbar variant="dense">
-          <Tooltip title="Открыть меню">
-            <IconButton edge="start" onClick={() => setIsOpen(true)}>
-              <MenuIcon sx={{ color: '#fff' }} />
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
-      </AppBar>
+      <Header setIsOpen={setIsOpen} />
 
       <Drawer open={isOpen} onClose={() => setIsOpen(false)}>
         <Taskbar />

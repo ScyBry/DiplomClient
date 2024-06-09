@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_ROUTES } from '../constants';
+import { API_ROUTES, BASE_URL } from '../constants';
 import { IDepartment, IGroup, ITeacher } from '../types/types';
 
 export const departmentApi = createApi({
   reducerPath: 'departmentApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:7777/api',
+    baseUrl: BASE_URL,
   }),
   tagTypes: ['Department', 'Group', 'Teachers'],
   endpoints: build => ({
