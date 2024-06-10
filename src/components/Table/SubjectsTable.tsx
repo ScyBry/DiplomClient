@@ -1,7 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { subjectApi } from '../../services/subjects.service';
-import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 import { ISubject, ITeacher } from '../../types/types';
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -30,7 +30,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import { toast } from 'react-toastify';
 import { TransferList } from '../TransferList';
 import SearchIcon from '@mui/icons-material/Search';
-import { departmentApi } from '../../services/department.service';
 import { SUBJECT_TABLE_HEAD_ROWS } from '../../constants';
 
 type RowProps = {
@@ -99,7 +98,6 @@ export const SubjectsTable: FC<SubjectTableProps> = ({
                   ),
                 }}
               />
-              ``
             </div>
             <TableRow>
               <TableCell />
@@ -114,19 +112,8 @@ export const SubjectsTable: FC<SubjectTableProps> = ({
               </TableCell>
             </TableRow>
           </TableHead>
-          {/* <TableBody>
-            {filteredSubjects &&
-              filteredSubjects.map(subject => (
-                <Row
-                  handleDeleteClick={handleDeleteClick}
-                  key={subject.name}
-                  row={subject}
-                />
-              ))}
-          </TableBody> */}
-
-          {filteredSubjects.length === 0 ? (
-            <TableBody>
+          <TableBody>
+            {filteredSubjects.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={SUBJECT_TABLE_HEAD_ROWS.length + 1}>
                   <Typography variant="h4" align="center">
@@ -134,19 +121,16 @@ export const SubjectsTable: FC<SubjectTableProps> = ({
                   </Typography>
                 </TableCell>
               </TableRow>
-            </TableBody>
-          ) : (
-            <TableBody>
-              {filteredSubjects &&
-                filteredSubjects.map(subject => (
-                  <Row
-                    handleDeleteClick={handleDeleteClick}
-                    key={subject.name}
-                    row={subject}
-                  />
-                ))}
-            </TableBody>
-          )}
+            ) : (
+              filteredSubjects.map(subject => (
+                <Row
+                  handleDeleteClick={handleDeleteClick}
+                  key={subject.name}
+                  row={subject}
+                />
+              ))
+            )}
+          </TableBody>
         </Table>
       </TableContainer>
 
@@ -167,10 +151,6 @@ export const SubjectsTable: FC<SubjectTableProps> = ({
 };
 
 const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
-  if (!row) {
-    return <div>Пиздец</div>;
-  }
-
   const [assignSubjectsToTeacher, { isLoading }] =
     teacherApi.useAssignSubjectsToTeacherMutation();
   const [editSubject] = subjectApi.useEditSubjectMutation();
@@ -216,18 +196,22 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
   };
 
   const handleAssignTeachers = (selectedTeachers: ITeacher[]) => {
-    assignSubjectsToTeacher({
-      teachers: selectedTeachers,
-      subjectId: row.id,
-    })
-      .unwrap()
-      .then(() => toast.success('Преподаватели успешно назначены'))
-      .catch(error => toast.error(error.data.message));
+    if (row.id) {
+      assignSubjectsToTeacher({
+        teachers: selectedTeachers,
+        subjectId: row.id,
+      })
+        .unwrap()
+        .then(() => toast.success('Преподаватели успешно назначены'))
+        .catch(error => toast.error(error.data.message));
+    }
   };
 
   const filteredTeachers = teachers?.filter(
     teacher =>
-      !row?.teachers.some(assignedTeacher => assignedTeacher.id === teacher.id),
+      !row?.teachers?.some(
+        assignedTeacher => assignedTeacher.id === teacher.id,
+      ),
   );
 
   return (
@@ -248,7 +232,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
             }}
             multiline
             size="small"
-            defaultValue={row.name}
+            value={subjectNameField}
             onChange={handleNameFieldChange}
           />
         </TableCell>
@@ -259,14 +243,14 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
             }}
             size="small"
             type="number"
-            defaultValue={row.hoursPerGroup}
+            value={subjectHoursField}
             onChange={handleSubjectHoursFieldChange}
           />
         </TableCell>
         <TableCell align="right" className="">
           {isEditable ? (
             <Tooltip title="Подтвердить изменения">
-              <IconButton onClick={() => handleEditClick()}>
+              <IconButton onClick={handleEditClick}>
                 <CheckIcon />
               </IconButton>
             </Tooltip>
@@ -279,7 +263,7 @@ const Row: FC<RowProps> = ({ row, handleDeleteClick }) => {
           )}
 
           <Tooltip title="Удалить">
-            <IconButton onClick={() => handleDeleteClick(row.id)}>
+            <IconButton onClick={() => row.id && handleDeleteClick(row.id)}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>

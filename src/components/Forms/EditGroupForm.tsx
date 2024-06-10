@@ -5,11 +5,11 @@ import { TextField, Typography } from '@mui/material';
 import { FC } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
-import { ISubject } from '../../types/types';
+import { IGroup } from '../../types/types';
 import { departmentApi } from '../../services/department.service';
 
 type EditGroupFormProps = {
-  group: ISubject;
+  group: IGroup;
 };
 
 export const EditGroupForm: FC<EditGroupFormProps> = ({ group }) => {

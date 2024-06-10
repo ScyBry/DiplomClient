@@ -131,9 +131,11 @@ export const CabinetPage = () => {
         <div className="mt-4">
           <Typography variant="h6">Свободные кабинеты:</Typography>
           <ul>
-            {availableRooms.map(room => (
-              <li>{room.roomNumber}</li>
-            ))}
+            {availableRooms.map(
+              (room: { location: string; id: string; roomNumber: string }) => (
+                <li>{room.roomNumber}</li>
+              ),
+            )}
           </ul>
         </div>
       )}

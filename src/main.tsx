@@ -6,7 +6,7 @@ import './index.css';
 import { store } from './redux/store.ts';
 import { router } from './router/router.tsx';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { green, purple } from '@mui/material/colors';
+import { green } from '@mui/material/colors';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

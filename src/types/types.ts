@@ -28,13 +28,13 @@ export interface IRegisterUser {
   username: string;
   password: string;
   repeatPassword: string;
-  token: string;
+  token?: string;
 }
 
 export interface ILoginUser {
   emailOrUsername: string;
   password: string;
-  token: string;
+  token?: string;
 }
 
 export interface IGetProfile {

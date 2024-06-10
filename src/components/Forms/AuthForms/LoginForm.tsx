@@ -2,7 +2,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginSchema, LoginSchemaType } from '../../../utils/zod/zod.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TextField, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { userApi } from '../../../services/user.service.ts';
 import { useEffect } from 'react';
 import { setTokenToLocalStorage } from '../../../utils/axios/axiosBase.ts';
@@ -26,20 +26,16 @@ export const LoginForm = () => {
   });
 
   const onSubmit: SubmitHandler<LoginSchemaType> = async userFields => {
-    await loginUser(userFields);
-    reset();
+    loginUser(userFields)
+      .then(() => toast.success('Успешно авторизован'))
+      .catch(error => toast.error(error.data.message)),
+      reset();
   };
 
   useEffect(() => {
-    if (isError) {
-      toast.error(error.data.message);
-    }
-
-    if (isSuccess) {
-      toast.success('Успешно авторизован');
-    }
-
-    if (data) {
+    // @ts-ignore
+    if (data && data.token) {
+      // @ts-ignore
       const result = setTokenToLocalStorage(data.token);
 
       if (result) navigate('/');

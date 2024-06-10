@@ -19,10 +19,10 @@ export const userApi = createApi({
       query: () => ({
         url: API_ROUTES.getAllUsers,
       }),
-      providesTags: result => ['Users'],
+      providesTags: () => ['Users'],
     }),
 
-    registerUser: build.mutation<IRegisterUser, void>({
+    registerUser: build.mutation<void, IRegisterUser>({
       query: user => ({
         url: API_ROUTES.registerUser,
         method: 'POST',
@@ -36,7 +36,6 @@ export const userApi = createApi({
         method: 'POST',
         body: user,
       }),
-      providesTags: result => ['User'],
       invalidatesTags: ['User', 'IsAuth'],
     }),
     getProfile: build.query<IGetProfile, void>({
@@ -47,7 +46,7 @@ export const userApi = createApi({
           Authorization: `Bearer ${getTokenFromLocalStorage()}`,
         },
       }),
-      providesTags: result => ['IsAuth'],
+      providesTags: () => ['IsAuth'],
     }),
 
     updateUser: build.mutation({

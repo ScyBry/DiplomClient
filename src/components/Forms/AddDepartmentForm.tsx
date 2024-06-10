@@ -24,7 +24,6 @@ export const AddDepartmentForm = () => {
     formState: { errors, isValid },
     handleSubmit,
     reset,
-    watch,
   } = useForm<DepartmentSchemaType>({
     resolver: zodResolver(departmentSchema),
     mode: 'onChange',

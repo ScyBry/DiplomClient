@@ -21,7 +21,6 @@ import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import { ApproveModal } from '../Modals/ApproveModal';
 import { departmentApi } from '../../services/department.service';
 import { toast } from 'react-toastify';
-import { error } from 'console';
 import { Modal } from '../Modal/Modal';
 import { EditDepartmentForm } from '../Forms/EditDepartmentForm';
 import { EditGroupForm } from '../Forms/EditGroupForm';
@@ -141,9 +140,11 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       >
         <EditDepartmentForm department={option} />
       </Modal>
-      <Modal isOpen={editGroupModal} onClose={() => setEditGroupModal(false)}>
-        <EditGroupForm group={selectedGroup} />
-      </Modal>
+      {selectedGroup && (
+        <Modal isOpen={editGroupModal} onClose={() => setEditGroupModal(false)}>
+          <EditGroupForm group={selectedGroup} />
+        </Modal>
+      )}
     </>
   );
 };

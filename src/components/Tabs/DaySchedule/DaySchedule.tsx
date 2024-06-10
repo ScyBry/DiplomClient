@@ -1,16 +1,9 @@
-import { FC, useEffect, useState, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Reorder } from 'framer-motion';
 import { LessonItem } from '../LessonItem/LessonItem';
-import {
-  ICabinet,
-  IScheduleDay,
-  ISubject,
-  ScheduleSubject,
-} from '../../../types/types';
+import { ICabinet, ISubject, ScheduleSubject } from '../../../types/types';
 import { scheduleApi } from '../../../services/schedule.service';
-
 import { toast } from 'react-toastify';
-import { LoadingButton } from '@mui/lab';
 import { ApproveModal } from '../../Modals/ApproveModal';
 import { IconButton, Tooltip } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
@@ -18,7 +11,7 @@ import CheckIcon from '@mui/icons-material/Check';
 let conflict: any = null;
 
 type DayScheduleProps = {
-  lastConfirm: string;
+  lastConfirm?: Date;
   subjects: ISubject[];
   groupId: string;
   dayOfWeek: string;
@@ -44,14 +37,14 @@ export const DaySchedule: FC<DayScheduleProps> = ({
   const [items, setItems] = useState([
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
   ]);
-  const [selectedLessonItems, setSelectedLessonItems] = useState<
-    IScheduleDay[]
-  >([]);
+  // const [selectedLessonItems, setSelectedLessonItems] = useState<
+  //   IScheduleDay[]
+  // >([]);
   const lessonRefs = useRef<Array<() => any>>([]);
 
   const handleSaveClick = () => {
     const lessonData = lessonRefs.current.map(getData => getData());
-    setSelectedLessonItems(lessonData);
+    // setSelectedLessonItems(lessonData);
     handleSaveData(lessonData);
   };
 
@@ -65,7 +58,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
     saveDaySchedule(data)
       .unwrap()
       .then()
-      .catch(error => toast.success('Расписание успешно сохранено'));
+      .catch(error => toast.success(error.data.message));
   };
 
   const handleConfirmSchedule = () => {
@@ -122,7 +115,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
         })}
       </Reorder.Group>
       <ApproveModal
-        text={`По нажатию на кнопку все предметы за день будут вычтены из кол-ва часов предмета и преподавателей, что их ведут. Последнее подтверждение: ${new Date(lastConfirm).toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
+        text={`По нажатию на кнопку все предметы за день будут вычтены из кол-ва часов предмета и преподавателей, что их ведут. Последнее подтверждение: ${lastConfirm && new Date(lastConfirm).toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
         handleClose={() => setIsApproveModalOpen(false)}
         isOpen={isApproveModalOpen}
         func={handleConfirmSchedule}

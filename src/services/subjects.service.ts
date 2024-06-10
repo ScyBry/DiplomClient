@@ -2,8 +2,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getTokenFromLocalStorage } from '../utils/axios/axiosBase';
 import { API_ROUTES, BASE_URL } from '../constants';
 import { ICabinet, ISubject } from '../types/types';
-import { url } from 'inspector';
-import { METHODS } from 'http';
 
 export const subjectApi = createApi({
   reducerPath: 'subjectApi',
@@ -24,7 +22,7 @@ export const subjectApi = createApi({
           includeZeroHours,
         },
       }),
-      providesTags: result => ['GroupSubjects'],
+      providesTags: () => ['GroupSubjects'],
     }),
     addSubject: build.mutation({
       query: subject => ({

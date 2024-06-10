@@ -1,9 +1,8 @@
-import { redirect, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { SubjectsTable } from '../components/Table/SubjectsTable';
 import { subjectApi } from '../services/subjects.service';
 import { LoadingCircle } from '../components/Loading';
-import { Helmet } from 'react-helmet-async';
-import { useEffect } from 'react';
+
 import { departmentApi } from '../services/department.service';
 
 export const GroupSubjectsPage = () => {

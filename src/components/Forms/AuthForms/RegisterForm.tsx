@@ -7,8 +7,7 @@ import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 
 export const RegisterForm = () => {
-  const [registerUser, { isSuccess, error, data, isError, isLoading }] =
-    userApi.useRegisterUserMutation();
+  const [registerUser, { isLoading }] = userApi.useRegisterUserMutation();
 
   const {
     register,

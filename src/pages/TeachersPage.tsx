@@ -11,7 +11,7 @@ export const TeachersPage = () => {
     data: teachers,
     isLoading,
     isSuccess,
-  } = teacherApi.useGetAllTeachersQuery({});
+  } = teacherApi.useGetAllTeachersQuery();
 
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState<boolean>(false);
 

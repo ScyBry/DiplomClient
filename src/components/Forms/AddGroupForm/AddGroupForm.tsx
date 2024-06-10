@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MenuItem, Select, TextField, Typography } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { departmentApi } from '../../../services/department.service';
 import { groupSchema, GroupSchemaType } from '../../../utils/zod/zod';
@@ -14,8 +14,7 @@ type AddGroupFormProps = {
 
 export const AddGroupForm: FC<AddGroupFormProps> = ({ departmentId }) => {
   const { data } = departmentApi.useGetAllDepartmentsQuery(false);
-  const [createGroup, { isSuccess, isError, error, isLoading }] =
-    departmentApi.useCreateGroupMutation();
+  const [createGroup, { isLoading }] = departmentApi.useCreateGroupMutation();
 
   const {
     register,

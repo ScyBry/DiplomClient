@@ -2,8 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   departmentEditSchema,
-  subjectSchema,
-  SubjectSchemaType,
+  DepartmentEditSchemaType,
 } from '../../utils/zod/zod';
 import {
   FormControl,
@@ -14,15 +13,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { subjectApi } from '../../services/subjects.service';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { IDepartment } from '../../types/types';
-import { DepartmentEditSchemaType } from '../../utils/zod/zod';
 import { departmentApi } from '../../services/department.service';
-import { error } from 'console';
 
 type EditDepartmentFormProps = {
   department: IDepartment;

@@ -19,7 +19,6 @@ export const DepartmentTaskbarSection: FC<DepartmentTaskbarSectionProps> = ({
   sectionData,
   handleDepartmentModal,
   handleGroupModal,
-  handleEditGroup,
   handleApproveModal,
 }) => {
   return (
@@ -33,7 +32,6 @@ export const DepartmentTaskbarSection: FC<DepartmentTaskbarSectionProps> = ({
             <DropdownMenu
               option={option}
               handleGroupModal={handleGroupModal}
-              handleEditGroup={handleEditGroup}
               handleApproveModal={handleApproveModal}
               key={option.name}
             />

@@ -14,7 +14,7 @@ export const teacherApi = createApi({
         url: API_ROUTES.getAllTeachers,
         method: 'GET',
       }),
-      providesTags: result => ['Teachers'],
+      providesTags: () => ['Teachers'],
     }),
     createTeacher: build.mutation<Partial<ITeacher>, ITeacher>({
       query: teacher => ({

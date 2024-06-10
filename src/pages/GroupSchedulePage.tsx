@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { subjectApi } from '../services/subjects.service';
 import { DaySchedule } from '../components/Tabs/DaySchedule/DaySchedule';
 import { WEEK_DAYS } from '../constants';
-import { Box, Button, IconButton, Paper, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import { scheduleApi } from '../services/schedule.service';
 import { LoadingCircle } from '../components/Loading';
 import { Helmet } from 'react-helmet-async';

@@ -16,7 +16,7 @@ export const departmentApi = createApi({
           withGroups,
         },
       }),
-      providesTags: result => ['Department'],
+      providesTags: () => ['Department'],
     }),
     createDepartment: build.mutation({
       query: department => ({
@@ -102,7 +102,7 @@ export const departmentApi = createApi({
           withSubjects,
         },
       }),
-      providesTags: result => ['Group'],
+      providesTags: () => ['Group'],
     }),
 
     getAllTeachers: build.query<ITeacher, void[]>({

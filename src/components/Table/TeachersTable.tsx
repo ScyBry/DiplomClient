@@ -1,5 +1,4 @@
 import {
-  Alert,
   IconButton,
   InputAdornment,
   Paper,
@@ -14,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { TEACHER_TABLE_HEAD_ROWS } from '../../constants';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { ITeacher } from '../../types/types';

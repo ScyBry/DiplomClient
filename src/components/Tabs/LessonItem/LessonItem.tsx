@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, ChangeEvent } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import {
   ICabinet,
   IScheduleDay,
@@ -9,12 +9,12 @@ import {
   Autocomplete,
   Checkbox,
   FormControl,
+  IconButton,
   MenuItem,
   Select,
   SelectChangeEvent,
   TextField,
   Typography,
-  IconButton,
 } from '@mui/material';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { Link } from 'react-router-dom';
@@ -35,7 +35,7 @@ export const LessonItem: FC<LessonItemProps> = ({
   matchingSubject,
   conflict,
   cabinets,
-  item,
+
   registerGetData,
 }) => {
   const [selectedSubject, setSelectedSubject] = useState(
@@ -46,13 +46,14 @@ export const LessonItem: FC<LessonItemProps> = ({
     if (matchingSubject) {
       return matchingSubject.ScheduleSubjectCabinet.map(cabinet =>
         cabinets.find(c => c.id === cabinet.cabinetId),
-      );
+      ).filter((cabinet): cabinet is ICabinet => cabinet !== undefined);
     }
     return [];
   });
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    // @ts-ignore
     registerGetData(() => ({
       orderNumber: index,
       subjectId: selectedSubject,
@@ -70,6 +71,7 @@ export const LessonItem: FC<LessonItemProps> = ({
   };
 
   const handleRoomsChange = (event: any, newValue: ICabinet[]) => {
+    console.log(event);
     setSelectedRooms(newValue);
   };
 

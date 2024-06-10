@@ -21,7 +21,7 @@ export const scheduleApi = createApi({
           id: groupId,
         },
       }),
-      providesTags: result => ['GroupSchedule'],
+      providesTags: () => ['GroupSchedule'],
     }),
     saveDaySchedule: build.mutation({
       query: body => ({
@@ -41,7 +41,7 @@ export const scheduleApi = createApi({
         },
       }),
       invalidatesTags: ['GroupSchedule'],
-      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ dispatch, queryFulfilled }) {
         await queryFulfilled;
         dispatch(teacherApi.util.invalidateTags(['Teachers']));
         dispatch(subjectApi.util.invalidateTags(['GroupSubjects']));

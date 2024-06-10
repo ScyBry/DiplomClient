@@ -4,7 +4,7 @@ import { subjectSchema, SubjectSchemaType } from '../../utils/zod/zod';
 import { TextField, Typography } from '@mui/material';
 import { subjectApi } from '../../services/subjects.service';
 
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 
@@ -13,14 +13,12 @@ type AddSubjectFormProps = {
 };
 
 export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
-  const [createSubject, { isSuccess, isError, error, isLoading }] =
-    subjectApi.useAddSubjectMutation();
+  const [createSubject, { isLoading }] = subjectApi.useAddSubjectMutation();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-    reset,
   } = useForm<SubjectSchemaType>({
     resolver: zodResolver(subjectSchema),
     mode: 'onChange',
@@ -35,18 +33,10 @@ export const AddSubjectForm: FC<AddSubjectFormProps> = ({ groupId }) => {
       groupId,
     };
 
-    createSubject(subjectData);
+    createSubject(subjectData)
+      .then(() => toast.success('Предмет успешно добавлен'))
+      .catch(error => toast.error(error.data.message));
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Предмет успешно добавлен');
-    }
-
-    if (isError) {
-      toast.error(error.data.message);
-    }
-  }, [isError, isSuccess, error]);
 
   return (
     <>

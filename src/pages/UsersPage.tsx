@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { AddTeacherForm } from '../components/Forms/AddTeacherForm';
+import { useState } from 'react';
 import { Modal } from '../components/Modal/Modal';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { Helmet } from 'react-helmet-async';

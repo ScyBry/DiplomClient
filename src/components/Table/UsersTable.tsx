@@ -1,5 +1,4 @@
 import {
-  Alert,
   IconButton,
   InputAdornment,
   Paper,
@@ -17,13 +16,12 @@ import {
   TEACHER_TABLE_HEAD_ROWS,
   USERS_TABLE_HEAD_ROWS,
 } from '../../constants';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { IUser } from '../../types/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ApproveModal } from '../Modals/ApproveModal';
-import { teacherApi } from '../../services/teacher.service';
 import { toast } from 'react-toastify';
 import CheckIcon from '@mui/icons-material/Check';
 import SearchIcon from '@mui/icons-material/Search';
