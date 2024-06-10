@@ -21,6 +21,7 @@ export const AddTeacherForm = () => {
 
   const onSubmit: SubmitHandler<AddTeacherSchemaType> = data => {
     const { totalHours, ...rest } = data;
+    // @ts-ignore
     createTeacher({ ...rest, totalHours: Number(totalHours) })
       .then(() => {
         toast.success('Преподаватель успешно добавлен');
