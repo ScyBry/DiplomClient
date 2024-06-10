@@ -93,12 +93,18 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
                 </Link>
               </ListItemIcon>
               <div className="invisible group-hover:visible">
-                <Link to={`groupSchedule/${group.id}`} target="_blank">
-                  <Tooltip title="Расписание">
-                    <IconButton>
-                      <EditCalendarIcon />
-                    </IconButton>
-                  </Tooltip>
+                <Link
+                  to={`/groupSchedule/${group.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <a target="_blank" rel="noreferrer">
+                    <Tooltip title="Расписание">
+                      <IconButton>
+                        <EditCalendarIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </a>
                 </Link>
                 <Tooltip title="Изменить группу">
                   <IconButton onClick={() => handleEditGroup(group)}>

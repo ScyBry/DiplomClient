@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
         element: <TeachersPage />,
       },
       {
-        path: 'groupSchedule/:id',
+        path: '/groupSchedule/:id',
         element: <GroupSchedulePage />,
       },
     ],
