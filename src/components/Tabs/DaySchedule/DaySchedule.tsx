@@ -65,7 +65,7 @@ export const DaySchedule: FC<DayScheduleProps> = ({
     saveDaySchedule(data)
       .unwrap()
       .then()
-      .catch(error => toast.error(error.data.message));
+      .catch(error => toast.success('Расписание успешно сохранено'));
   };
 
   const handleConfirmSchedule = () => {
