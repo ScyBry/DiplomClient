@@ -20,7 +20,7 @@ export const ExportToExcel = () => {
   const [day, setDay] = useState<string>(WEEK_DAYS[0].value);
 
   const handleExport = async () => {
-    const response = await axios.get(`${BASE_URL}schedule/exportExcel`, {
+    const response = await axios.get(`${BASE_URL}/schedule/exportExcel`, {
       responseType: 'arraybuffer',
       params: {
         day,
