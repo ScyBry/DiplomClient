@@ -19,7 +19,6 @@ export const LoginForm = () => {
     register,
     handleSubmit,
     formState: { errors, isValid },
-    reset,
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     mode: 'onChange',
@@ -27,9 +26,12 @@ export const LoginForm = () => {
 
   const onSubmit: SubmitHandler<LoginSchemaType> = async userFields => {
     loginUser(userFields)
-      .then(() => toast.success('Успешно авторизован'))
-      .catch(error => toast.error(error.data.message)),
-      reset();
+      .unwrap()
+      .then(response => {
+        // @ts-ignore
+        toast.success(response.data.message);
+      })
+      .catch(error => toast.error(error.data.message));
   };
 
   useEffect(() => {
