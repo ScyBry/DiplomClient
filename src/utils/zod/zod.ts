@@ -52,7 +52,7 @@ export const loginSchema = z.object({
     .max(100, { message: 'Не более 100 символов' }),
   password: z
     .string()
-    .min(6, { message: 'Пароль должен содержать не менее 6 символов' })
+    .min(1, { message: 'Пароль не может быть пустым' })
     .max(100, { message: 'Пароль не должен превышать 100 символов' }),
 });
 export type LoginSchemaType = z.infer<typeof loginSchema>;
