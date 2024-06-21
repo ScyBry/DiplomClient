@@ -139,7 +139,7 @@ export const UsersTable: FC<TeachersTableProps> = ({
       </TableContainer>
       {selectedUser && (
         <ApproveModal
-          text={`Вы действительно хотите удалить преподавателя ?`}
+          text={`Вы действительно хотите удалить пользователя?`}
           handleClose={() => setIsApproveModalOpen(false)}
           isOpen={isApproveModalOpen}
           func={handleDelete}
