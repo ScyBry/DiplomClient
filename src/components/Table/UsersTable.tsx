@@ -104,7 +104,7 @@ export const UsersTable: FC<TeachersTableProps> = ({
                 </TableCell>
               ))}
               <TableCell align="right">
-                <Tooltip title="Добавить преподавателя">
+                <Tooltip title="Добавить пользователя">
                   <IconButton onClick={() => setIsUserModalOpen(true)}>
                     <AddIcon />
                   </IconButton>
@@ -210,7 +210,7 @@ const TeachersTableRow: FC<TeachersTableRowProps> = ({
           </Tooltip>
         )}
 
-        <Tooltip title="Удалить преподавателя">
+        <Tooltip title="Удалить пользователя">
           <IconButton onClick={() => handleDeleteClick(user)}>
             <DeleteIcon />
           </IconButton>
